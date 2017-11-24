@@ -7,6 +7,7 @@ package main;
 
 import model.User;
 
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -19,27 +20,16 @@ public class Test {
         System.out.println("==Save to XML==");
 
         User.store.Save(
-                User.make()
-                        .fullName("2Eustáquio da Rocha")
-                        .telephone("246574654")
-                        .address("Rua Whatever")
-                        .build());
-
-        User.store.Save(
-                User.make()
-                        .fullName("Paula Tejano")
-                        .telephone("5646546456")
-                        .build());
-
-        User.store.Save(
-                User.make()
-                        .fullName("Honório Aquino Rêgo")
-                        .telephone("7987851")
+                User.builder()
+                        .name("Daniel Andrade")
+                        .email("daniel.oandrade@uniriotec.br")
+                        .birthday(new Date())
+                        .password("TRY")
                         .build());
 
         List<User> studentsLoaded = User.store.ListAll();
 
         for (User s : studentsLoaded)
-            System.out.println(s.getFullName()+" - "+s.getTelephone());
+            System.out.println(s.getName()+" - "+s.getId());
     }
 }
