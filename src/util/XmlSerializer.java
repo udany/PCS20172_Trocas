@@ -30,7 +30,7 @@ public class XmlSerializer {
 
             m.marshal(object, yourFile);
         }catch (Exception e){
-            System.out.println("Error: "+e.getMessage());
+            System.out.println("XmlSerializer Save Error: "+e.getMessage());
             return false;
         }
 
@@ -52,7 +52,7 @@ public class XmlSerializer {
             File xml = new File(file);
             obj = (T) unmarshaller.unmarshal(xml);
         }catch (Exception e){
-            System.out.println("Error: "+e.getMessage());
+            System.out.println("XmlSerializer Load Error: "+e.getMessage());
             return null;
         }
 

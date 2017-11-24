@@ -8,6 +8,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
+import java.util.function.Function;
+import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
 public class XmlStore<T extends BaseModel> extends BaseStore<T> {
     protected Class model;
@@ -31,6 +34,7 @@ public class XmlStore<T extends BaseModel> extends BaseStore<T> {
         }
 
         this.classes.add(SerializableList.class);
+        this.classes.add(ModelList.class);
     }
 
     public XmlStore(String file, Class model){
@@ -81,10 +85,21 @@ public class XmlStore<T extends BaseModel> extends BaseStore<T> {
         lastRead = GetLastWrite();
     }
 
-    public List<T> ListAll(){
+    public List<T> List(){
         this.Load();
 
         return data;
+    }
+
+    public List<T> List(Predicate<T> filter){
+        this.Load();
+
+        return data.stream().filter(filter).collect(Collectors.toList());
+    }
+
+    public T GetById(int id) {
+        List<T> r = List(x -> x.getId() == id);
+        return r.size() > 0 ? r.get(0) : null;
     }
 
     private long GetLastWrite(){

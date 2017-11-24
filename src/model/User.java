@@ -11,7 +11,7 @@ import java.security.MessageDigest;
 import java.util.Base64;
 import java.util.Date;
 
-@XmlRootElement(name = "student")
+@XmlRootElement(name = "user")
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
@@ -22,7 +22,7 @@ public class User extends BaseModel {
     @Getter @Setter private Date birthday;
     @Getter @Setter private double rating;
 
-    public static BaseStore store = new XmlStore<User>("store/user.xml", User.class);
+    public static XmlStore<User> store = new XmlStore<User>("store/user.xml", User.class);
 
     public static class UserBuilder {
         public UserBuilder password(String password) {

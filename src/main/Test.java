@@ -5,8 +5,12 @@
  */
 package main;
 
+import base.ModelList;
 import model.User;
+import model.UserGroup;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
@@ -19,17 +23,22 @@ public class Test {
     public static void main(String[] args) {
         System.out.println("==Save to XML==");
 
-        User.store.Save(
-                User.builder()
-                        .name("Daniel Andrade")
-                        .email("daniel.oandrade@uniriotec.br")
-                        .birthday(new Date())
-                        .password("TRY")
-                        .build());
+//        User.store.Save(
+//                User.builder()
+//                        .name("Daniel Andrade")
+//                        .email("daniel.oandrade@uniriotec.br")
+//                        .birthday(new Date())
+//                        .password("TRY")
+//                        .build());
 
-        List<User> studentsLoaded = User.store.ListAll();
+//        UserGroup.store.Save(UserGroup.builder().name("Admin").build());
+//        UserGroup.store.Save(UserGroup.builder().name("User").build());
 
-        for (User s : studentsLoaded)
+//        List<User> studentsLoaded = User.store.List(x -> x.getId() >= 2);
+
+        ModelList<User> list = new ModelList<User>(User.store, new ArrayList<Integer>(Arrays.asList(1,3)));
+
+        for (User s : list.models)
             System.out.println(s.getName()+" - "+s.getId());
     }
 }
