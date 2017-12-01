@@ -21,6 +21,8 @@ public class Signup extends MyFrame {
     public Signup() {
         setTitle("Cadastro");
         setSize(400, 300);
+        setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
+
         setContentPane(mainPanel);
 
         backButton.addActionListener(e -> {
