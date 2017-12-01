@@ -2,6 +2,7 @@ package model;
 
 import base.BaseModel;
 import base.BaseStore;
+import base.ModelList;
 import base.XmlStore;
 import lombok.*;
 
@@ -16,6 +17,7 @@ import java.util.Date;
 @NoArgsConstructor
 @AllArgsConstructor
 public class CounterItem extends BaseModel {
-	
+    @Getter @Setter private int productId;
+
     public static XmlStore<CounterItem> store = new XmlStore<CounterItem>("store/counter_item.xml", CounterItem.class);
 }
