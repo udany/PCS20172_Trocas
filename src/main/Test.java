@@ -6,8 +6,13 @@
 package main;
 
 import base.ModelList;
+import javafx.stage.Screen;
 import model.User;
 import model.UserGroup;
+import sun.rmi.runtime.Log;
+import view.Login;
+import view.LoginScreen;
+import view.ViewBus;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -21,6 +26,11 @@ import java.util.List;
 public class Test {
     
     public static void main(String[] args) {
+        ViewBus.get().open(Login.class);
+    }
+
+
+    private static void testXml(){
         System.out.println("==Save to XML==");
 
 //        User.store.Save(
