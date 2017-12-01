@@ -1,9 +1,12 @@
 package view;
 
+import model.User;
 import util.MyFrame;
 
 import javax.swing.*;
 import java.awt.*;
+
+import static javax.swing.JOptionPane.showMessageDialog;
 
 public class Signup extends MyFrame {
 
@@ -12,7 +15,6 @@ public class Signup extends MyFrame {
     private JTextField nameField;
     private JTextField emailField;
     private JPasswordField passwordField;
-    private JTextField textField1;
     private JButton backButton;
     private JButton registerButton;
 
@@ -22,8 +24,11 @@ public class Signup extends MyFrame {
         setContentPane(mainPanel);
 
         backButton.addActionListener(e -> {
-            ViewBus.get().open(Login.class);
-            close();
+            back();
+        });
+
+        registerButton.addActionListener(e -> {
+            signup();
         });
     }
 
@@ -31,6 +36,50 @@ public class Signup extends MyFrame {
     public void open(Object... data) {
         super.open();
         centerOnScreen();
+
+        nameField.setText("");
+        emailField.setText("");
+        passwordField.setText("");
+    }
+
+    private void back() {
+        ViewBus.get().open(Login.class);
+        close();
+    }
+
+    private void signup() {
+        User user = User.builder()
+                .name(nameField.getText())
+                .email(emailField.getText())
+                .password(passwordField.getText())
+                .build();
+
+
+        //// VALIDATION
+        if (user.getName().length() == 0) {
+            showMessageDialog(null, "Preencha o usuário");
+            return;
+        }
+        if (user.getEmail().length() == 0) {
+            showMessageDialog(null, "Preencha o email");
+            return;
+        }
+        if (passwordField.getText().length() == 0) {
+            showMessageDialog(null, "Preencha a senha");
+            return;
+        }
+        Boolean userExists = User.store.List(x -> x.getEmail().equals(user.getEmail())).size() > 0;
+        if (userExists) {
+            showMessageDialog(null, "Já existe um usuário com esse email!");
+            return;
+        }
+
+
+        User.store.Save(user);
+
+        showMessageDialog(null, "Sucesso!");
+
+        back();
     }
 
     {
@@ -117,21 +166,6 @@ public class Signup extends MyFrame {
         gbc.anchor = GridBagConstraints.WEST;
         gbc.fill = GridBagConstraints.HORIZONTAL;
         panel1.add(passwordField, gbc);
-        final JLabel label5 = new JLabel();
-        label5.setText("Nasc.");
-        gbc = new GridBagConstraints();
-        gbc.gridx = 0;
-        gbc.gridy = 3;
-        gbc.anchor = GridBagConstraints.WEST;
-        panel1.add(label5, gbc);
-        textField1 = new JTextField();
-        textField1.setToolTipText("DD/MM/YYYY");
-        gbc = new GridBagConstraints();
-        gbc.gridx = 2;
-        gbc.gridy = 3;
-        gbc.anchor = GridBagConstraints.WEST;
-        gbc.fill = GridBagConstraints.HORIZONTAL;
-        panel1.add(textField1, gbc);
         final JPanel spacer2 = new JPanel();
         gbc = new GridBagConstraints();
         gbc.gridx = 0;

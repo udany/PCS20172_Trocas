@@ -1,9 +1,15 @@
 package view;
 
+import controller.AuthController;
+import model.User;
 import util.MyFrame;
 
 import javax.swing.*;
 import java.awt.*;
+import java.util.Arrays;
+import java.util.List;
+
+import static javax.swing.JOptionPane.showMessageDialog;
 
 public class Login extends MyFrame {
     private JPanel mainPanel;
@@ -23,16 +29,33 @@ public class Login extends MyFrame {
             openRegister();
             close();
         });
+
+        loginButton.addActionListener(e -> {
+            login();
+        });
     }
 
     @Override
     public void open(Object... data) {
         super.open();
         centerOnScreen();
+
+        emailField.setText("");
+        passwordField.setText("");
     }
 
     private void openRegister() {
         ViewBus.get().open(Signup.class);
+    }
+
+    private void login() {
+        User tempUser = User.builder().email(emailField.getText()).password(passwordField.getText()).build();
+
+        if (AuthController.auth(tempUser)) {
+            showMessageDialog(null, "Sucess");
+        } else {
+            showMessageDialog(null, "Error");
+        }
     }
 
     {
