@@ -6,28 +6,18 @@ import javax.swing.*;
 
 import java.awt.*;
 
-public class SignupScreen extends JFrame 
+public class CreateProductScreen extends JFrame
 {
-    public static void main(String[] args) 
+    public CreateProductScreen() 
     {
-    	SignupScreen signupScreen = new SignupScreen();
-    	signupScreen.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-    	signupScreen.setVisible(true);
-    	signupScreen.setTitle("Cadastre-se");
-    	signupScreen.setSize(280, 230);
-    }
-
-    public SignupScreen() 
-    {
-        super("Cadastre-se");
+        super("Cadastrar produto");
         initialize();
     }
-
 
     private void initialize() 
     {
         this.setSize(290, 180);
-        this.setTitle("Cadastre-se");
+        this.setTitle("Cadastrar produto");
         this.setVisible(true);
         Container screen = getContentPane();
         screen.setLayout(null);
@@ -36,29 +26,29 @@ public class SignupScreen extends JFrame
         this.setResizable(false);
 
         // LABELS
-        JLabel loginlbl = new JLabel("Login: ");
-        screen.add(loginlbl);
-        loginlbl.setBounds(50, 35, 60, 20);
+        JLabel nameLabel = new JLabel("Nome: ");
+        screen.add(nameLabel);
+        nameLabel.setBounds(50, 35, 60, 20);
 
-        JLabel senhalbl = new JLabel("Senha: ");
-        screen.add(senhalbl);
-        senhalbl.setBounds(50, 60, 60, 20);
+        JLabel priceLabel = new JLabel("Preço: ");
+        screen.add(priceLabel);
+        priceLabel.setBounds(50, 60, 60, 20);
 
         // TEXTFIELDS
-        final JTextField loginTxt = new JTextField(6);
-        screen.add(loginTxt);
-        loginTxt.setBounds(110, 35, 90, 20);
+        final JTextField nameTxt = new JTextField(6);
+        screen.add(nameTxt);
+        nameTxt.setBounds(110, 35, 90, 20);
 
-        final JTextField senhaTxt = new JPasswordField(6);
-        screen.add(senhaTxt);
-        senhaTxt.setBounds(110, 60, 90, 20);
+        final JTextField priceTxt = new JTextField(6);
+        screen.add(priceTxt);
+        priceTxt.setBounds(110, 60, 90, 20);
 
 
         // BUTTONS
-        JButton okBtn = new JButton("Cadastrar");
-        screen.add(okBtn);
-        okBtn.setBounds(70, 100, 120, 30);
-        okBtn.addActionListener(new java.awt.event.ActionListener() 
+        JButton registerBtn = new JButton("Cadastrar");
+        screen.add(registerBtn);
+        registerBtn.setBounds(70, 100, 120, 30);
+        registerBtn.addActionListener(new java.awt.event.ActionListener() 
         {
             public void actionPerformed(java.awt.event.ActionEvent e) 
             {
