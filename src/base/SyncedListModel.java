@@ -14,6 +14,10 @@ public class SyncedListModel<E extends BaseModel> extends AbstractListModel<E> {
         list.onLoad.addListener(e -> fireContentsChanged(this, 0, this.getSize()));
     }
 
+    public void setQuery(Predicate<E> predicate){
+        list.setQuery(predicate);
+    }
+
     @Override
     public int getSize() {
         return list.size();

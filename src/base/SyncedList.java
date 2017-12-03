@@ -20,6 +20,11 @@ public class SyncedList<E extends BaseModel> extends ArrayList<E> {
         store.onChange.addListener(e -> load());
     }
 
+    public void setQuery(Predicate<E> predicate){
+        query = predicate;
+        load();
+    }
+
     private void load(){
         List<E> results = store.List(query);
         clear();

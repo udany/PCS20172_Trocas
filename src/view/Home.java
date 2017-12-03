@@ -27,6 +27,9 @@ public class Home extends MyFrame {
     private JButton newProductButton;
     private JList productList;
 
+    private SyncedListModel<Counter> countersModel;
+    private SyncedListModel<Product> productsModel;
+
     public Home() {
         super();
 
@@ -44,6 +47,9 @@ public class Home extends MyFrame {
 
         ////// Counters
         /// List
+        countersModel = new SyncedListModel<>(x -> x.getUserId() != 0, Counter.store);
+        counterList.setModel(countersModel);
+
         counterList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         counterList.addListSelectionListener(e -> {
             editCounterButton.setEnabled(true);
@@ -66,6 +72,9 @@ public class Home extends MyFrame {
 
         ////// Products
         /// List
+        productsModel = new SyncedListModel<>(x -> x.getUserId() != 0, Product.store);
+        productList.setModel(productsModel);
+
         productList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         productList.addListSelectionListener(e -> {
             editProductButton.setEnabled(true);
@@ -94,13 +103,11 @@ public class Home extends MyFrame {
 
         ////// Counters
         /// List
-        AbstractListModel<Counter> countersModel = new SyncedListModel<>(x -> x.getUserId() == current.getId(), Counter.store);
-        counterList.setModel(countersModel);
+        countersModel.setQuery(x -> x.getUserId() == current.getId());
 
         ////// Products
         /// List
-        AbstractListModel<Product> productsModel = new SyncedListModel<>(x -> x.getUserId() == current.getId(), Product.store);
-        productList.setModel(productsModel);
+        productsModel.setQuery(x -> x.getUserId() == current.getId());
     }
 
     private void createMenu() {
@@ -109,10 +116,10 @@ public class Home extends MyFrame {
         final JMenuBar menuBar = new JMenuBar();
 
         //create menus
-        JMenu fileMenu = new JMenu("File");
+        JMenu fileMenu = new JMenu("Arquivo");
 
         //create menu items
-        JMenuItem exitMenuItem = new JMenuItem(new AbstractAction("Exit") {
+        JMenuItem exitMenuItem = new JMenuItem(new AbstractAction("Sair") {
             public void actionPerformed(ActionEvent ae) {
                 ref.close();
 
