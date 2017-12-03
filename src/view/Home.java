@@ -1,13 +1,16 @@
 package view;
 
 import base.SyncedList;
+import base.SyncedListModel;
 import controller.AuthController;
 import model.Counter;
 import model.User;
+import util.ModelCellRenderer;
 import util.MyFrame;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ActionEvent;
 import java.util.List;
 
 public class Home extends MyFrame {
@@ -16,8 +19,8 @@ public class Home extends MyFrame {
     private JList counterList;
     private JPanel myCounters;
     private JPanel myProducts;
-    private JButton editarButton;
-    private JButton novoButton;
+    private JButton editCounterButton;
+    private JButton newCounterButton;
 
     public Home() {
         super();
@@ -26,35 +29,69 @@ public class Home extends MyFrame {
         setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
 
         setContentPane(mainPanel);
-
-        ////// Title Logic
-        User current = AuthController.getCurrentUser();
-        setTitle("Escamb-o-mator 7000 - Logado como: " + current.getName());
+        createMenu();
 
         ////// On Open
         onOpen.addListener(e -> {
             centerOnScreen();
+            fill();
         });
 
         ////// Counters
-        List<Counter> counters = new SyncedList<>(x -> x.getUserId() == current.getId(), Counter.store);
-
-        AbstractListModel<Counter> countersModel = new AbstractListModel<Counter>() {
-            @Override
-            public int getSize() {
-                return counters.size();
-            }
-
-            @Override
-            public Counter getElementAt(int index) {
-                return counters.get(index);
-            }
-        };
-
+        /// List
         counterList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+        counterList.addListSelectionListener(e -> {
+            editCounterButton.setEnabled(true);
+        });
+
+        counterList.setCellRenderer(new ModelCellRenderer<Counter>(x -> x.getId() + " - " + x.getName()));
+
+        /// New
+        newCounterButton.addActionListener(e -> {
+            ViewBus.get().open(CounterEditor.class);
+        });
+
+        editCounterButton.addActionListener(e -> {
+            ViewBus.get().open(CounterEditor.class, counterList.getSelectedValue());
+        });
+    }
+
+    private void fill() {
+        ////// Title Logic
+        User current = AuthController.getCurrentUser();
+        setTitle("Escamb-o-mator 7000 - Logado como: " + current.getName());
+
+        ////// Counters
+        /// List
+        AbstractListModel<Counter> countersModel = new SyncedListModel<>(x -> x.getUserId() == current.getId(), Counter.store);
         counterList.setModel(countersModel);
+    }
 
+    private void createMenu() {
+        Home ref = this;
+        //create a menu bar
+        final JMenuBar menuBar = new JMenuBar();
 
+        //create menus
+        JMenu fileMenu = new JMenu("File");
+
+        //create menu items
+        JMenuItem exitMenuItem = new JMenuItem(new AbstractAction("Exit") {
+            public void actionPerformed(ActionEvent ae) {
+                ref.close();
+
+                ViewBus.get().open(Login.class);
+            }
+        });
+
+        //add menu items to menus
+        fileMenu.add(exitMenuItem);
+
+        //add menu to menubar
+        menuBar.add(fileMenu);
+
+        //add menubar to the frame
+        setJMenuBar(menuBar);
     }
 
     {
@@ -103,26 +140,28 @@ public class Home extends MyFrame {
         gbc.gridy = 1;
         gbc.fill = GridBagConstraints.BOTH;
         myCounters.add(panel1, gbc);
-        editarButton = new JButton();
-        editarButton.setText("Editar");
+        editCounterButton = new JButton();
+        editCounterButton.setEnabled(false);
+        editCounterButton.setText("Editar");
+        editCounterButton.putClientProperty("html.disable", Boolean.FALSE);
         gbc = new GridBagConstraints();
         gbc.gridx = 1;
         gbc.gridy = 0;
         gbc.fill = GridBagConstraints.HORIZONTAL;
-        panel1.add(editarButton, gbc);
+        panel1.add(editCounterButton, gbc);
         final JPanel spacer1 = new JPanel();
         gbc = new GridBagConstraints();
         gbc.gridx = 2;
         gbc.gridy = 0;
         gbc.fill = GridBagConstraints.HORIZONTAL;
         panel1.add(spacer1, gbc);
-        novoButton = new JButton();
-        novoButton.setText("Novo");
+        newCounterButton = new JButton();
+        newCounterButton.setText("Novo");
         gbc = new GridBagConstraints();
         gbc.gridx = 3;
         gbc.gridy = 0;
         gbc.fill = GridBagConstraints.HORIZONTAL;
-        panel1.add(novoButton, gbc);
+        panel1.add(newCounterButton, gbc);
         final JPanel spacer2 = new JPanel();
         gbc = new GridBagConstraints();
         gbc.gridx = 0;

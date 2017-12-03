@@ -17,7 +17,7 @@ public class ViewBus {
         return instance;
     }
 
-    public void open(Class c, Object... data){
+    public MyFrame get(Class c){
         if (MyFrame.class.isAssignableFrom(c)){
             String name = c.getName();
             MyFrame screen = screens.get(name);
@@ -32,7 +32,16 @@ public class ViewBus {
                 }
             }
 
-            screen.open(data);
+            return screen;
         }
+
+        return null;
+    }
+    public MyFrame open(Class c, Object... data){
+        MyFrame screen = get(c);
+
+        if (screen!= null) screen.open(data);
+
+        return screen;
     }
 }
