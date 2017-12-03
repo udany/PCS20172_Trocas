@@ -2,10 +2,17 @@ package view;
 
 import controller.AuthController;
 import model.Counter;
+import model.CounterItem;
+import model.Product;
+import util.ArrayListModel;
 import util.MyFrame;
+import util.StringCellRenderer;
 
 import javax.swing.*;
 import java.awt.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
 
 public class CounterEditor extends MyFrame {
 
@@ -14,11 +21,13 @@ public class CounterEditor extends MyFrame {
     private JTextArea descriptionField;
     private JButton saveButton;
     private JButton cancelButton;
-    private JButton removeButton;
-    private JButton adicionarButton;
+    private JButton removeProductButton;
+    private JButton addProductButton;
     private JList productList;
 
     private Counter currentCounter;
+    private ProductSelector productSelector;
+    private ArrayListModel<CounterItem> itemModel;
 
     public CounterEditor() {
         super();
@@ -51,16 +60,52 @@ public class CounterEditor extends MyFrame {
         cancelButton.addActionListener(e -> {
             close();
         });
+
+
+        /////// Product management
+        ////// Products
+        itemModel = new ArrayListModel<>(new ArrayList<>());
+        productList.setModel(itemModel);
+
+        productList.addListSelectionListener(e -> {
+            removeProductButton.setEnabled(true);
+        });
+
+        productList.setCellRenderer(new StringCellRenderer<CounterItem>(x -> x.getProduct().getName()));
+
+
+        ///// Add new
+        productSelector = (ProductSelector) ViewBus.get().get(ProductSelector.class);
+
+        addProductButton.addActionListener(e -> {
+            productSelector.open(Product.store.List(x -> x.getUserId() == AuthController.getCurrentUser().getId()));
+        });
+
+        productSelector.onSelect.addListener(list -> {
+            List<CounterItem> ciList = list.stream().map(x -> new CounterItem(x)).collect(Collectors.toList());
+
+            itemModel.add(ciList);
+        });
+
+        ///// Remove
+        removeProductButton.addActionListener(e -> {
+            List<CounterItem> list = productList.getSelectedValuesList();
+
+            itemModel.remove(list);
+        });
     }
 
     private void fillForm() {
         nameField.setText(currentCounter.getName());
         descriptionField.setText(currentCounter.getDescription());
+        itemModel.setList(currentCounter.getItems().list);
+        productList.clearSelection();
     }
 
     private void readForm() {
         currentCounter.setName(nameField.getText());
         currentCounter.setDescription(descriptionField.getText());
+        currentCounter.getItems().list = itemModel.getList();
     }
 
 
@@ -151,26 +196,26 @@ public class CounterEditor extends MyFrame {
         gbc.gridy = 3;
         gbc.fill = GridBagConstraints.BOTH;
         panel1.add(panel2, gbc);
-        removeButton = new JButton();
-        removeButton.setText("Remover");
+        removeProductButton = new JButton();
+        removeProductButton.setText("Remover");
         gbc = new GridBagConstraints();
         gbc.gridx = 1;
         gbc.gridy = 0;
         gbc.fill = GridBagConstraints.HORIZONTAL;
-        panel2.add(removeButton, gbc);
+        panel2.add(removeProductButton, gbc);
         final JPanel spacer2 = new JPanel();
         gbc = new GridBagConstraints();
         gbc.gridx = 2;
         gbc.gridy = 0;
         gbc.fill = GridBagConstraints.HORIZONTAL;
         panel2.add(spacer2, gbc);
-        adicionarButton = new JButton();
-        adicionarButton.setText("Adicionar");
+        addProductButton = new JButton();
+        addProductButton.setText("Adicionar");
         gbc = new GridBagConstraints();
         gbc.gridx = 3;
         gbc.gridy = 0;
         gbc.fill = GridBagConstraints.HORIZONTAL;
-        panel2.add(adicionarButton, gbc);
+        panel2.add(addProductButton, gbc);
         final JPanel spacer3 = new JPanel();
         gbc = new GridBagConstraints();
         gbc.gridx = 0;
