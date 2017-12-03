@@ -23,7 +23,7 @@ public class MyFrame extends JFrame {
         addWindowListener(new WindowListener() {
             @Override
             public void windowOpened(WindowEvent e) {
-                open();
+
             }
 
             @Override
