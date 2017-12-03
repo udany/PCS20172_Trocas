@@ -16,7 +16,7 @@ public class Product extends BaseModel
     @Getter @Setter private Integer userId;
     @Getter @Setter private String name;
     @Getter @Setter private String description;
-    @Getter @Setter private int condition;
+    @Getter @Setter private ProductCondition condition;
 
     public static XmlStore<Product> store = new XmlStore<Product>("store/product.xml", Product.class);
 
