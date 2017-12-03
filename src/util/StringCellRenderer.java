@@ -6,11 +6,11 @@ import javax.swing.*;
 import java.awt.*;
 import java.util.function.Function;
 
-public class ModelCellRenderer<T extends BaseModel>  implements ListCellRenderer {
+public class StringCellRenderer<T>  implements ListCellRenderer {
     private DefaultListCellRenderer defaultRenderer = new DefaultListCellRenderer();
     private Function<T, String> function;
 
-    public ModelCellRenderer(Function<T, String> fn){
+    public StringCellRenderer(Function<T, String> fn){
         function = fn;
     }
 
