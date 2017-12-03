@@ -1,7 +1,6 @@
 package model;
 
 import base.BaseModel;
-import base.BaseStore;
 import base.XmlStore;
 import lombok.*;
 
