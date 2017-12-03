@@ -49,7 +49,12 @@ public class XmlStore<T extends BaseModel> extends BaseStore<T> {
             obj.setId(lastId+1);
             data.add(obj);
         }else{
-            //TODO: Check if it exists within the list else check if id exists, if so replace, else set id to lastId
+            int idx = data.indexOf(obj);
+            if (idx == -1){
+                T currentObj = List(x -> x.getId() == obj.getId()).get(0);
+                idx = data.indexOf(currentObj);
+                data.set(idx, obj);
+            }
         }
 
         SaveAll(data);
