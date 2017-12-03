@@ -25,6 +25,7 @@ public class ModelList<T extends BaseModel> extends SerializableList<T> {
     public List<Integer> getIds(){
         return models.stream().map(x -> x.getId()).collect(Collectors.toList());
     }
+
     public void setIds(List<Integer> ids){
         this.models = ids.stream().map(x -> this.store.GetById(x)).collect(Collectors.toList());
     }

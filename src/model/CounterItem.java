@@ -26,4 +26,8 @@ public class CounterItem extends BaseModel {
     public Product getProduct(){
         return this.productId > 0 ? Product.store.GetById(this.productId) : null;
     }
+
+    public CounterItem(Product p){
+        productId = p.getId();
+    }
 }

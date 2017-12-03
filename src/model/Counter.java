@@ -4,6 +4,7 @@ import base.BaseModel;
 import base.BaseStore;
 import base.XmlStore;
 import lombok.*;
+import util.SerializableList;
 
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
@@ -20,8 +21,9 @@ public class Counter extends BaseModel {
     @Getter @Setter private int userId;
     @Getter @Setter private String name;
     @Getter @Setter private String description;
+    @Getter @Setter private SerializableList<CounterItem> items = new SerializableList<>();
 
-    public static XmlStore<Counter> store = new XmlStore<Counter>("store/counter.xml", Counter.class);
+    public static XmlStore<Counter> store = new XmlStore<Counter>("store/counter.xml", Counter.class, CounterItem.class);
 
     @XmlTransient
     public User getUser(){
