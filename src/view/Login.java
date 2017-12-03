@@ -35,6 +35,12 @@ public class Login extends MyFrame {
         loginButton.addActionListener(e -> {
             login();
         });
+        emailField.addActionListener(e -> {
+            login();
+        });
+        passwordField.addActionListener(e -> {
+            login();
+        });
 
         onOpen.addListener(e -> {
             centerOnScreen();
