@@ -6,10 +6,12 @@
 package main;
 
 import base.ModelList;
+import controller.AuthController;
 import javafx.stage.Screen;
 import model.User;
 import model.UserGroup;
 import sun.rmi.runtime.Log;
+import view.Home;
 import view.Login;
 import view.LoginScreen;
 import view.ViewBus;
@@ -26,7 +28,10 @@ import java.util.List;
 public class Test {
     
     public static void main(String[] args) {
-        ViewBus.get().open(Login.class);
+        //ViewBus.get().open(Login.class);
+
+        AuthController.auth(User.builder().email("d").password("123456").build());
+        ViewBus.get().open(Home.class);
     }
 
 
