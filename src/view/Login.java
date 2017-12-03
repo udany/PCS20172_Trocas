@@ -19,6 +19,8 @@ public class Login extends MyFrame {
     private JButton registerButton;
 
     public Login() {
+        super();
+
         setTitle("Login");
         setSize(400, 300);
         setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
@@ -33,13 +35,14 @@ public class Login extends MyFrame {
         loginButton.addActionListener(e -> {
             login();
         });
+
+        onOpen.addListener(e -> {
+            centerOnScreen();
+            clearForm();
+        });
     }
 
-    @Override
-    public void open(Object... data) {
-        super.open();
-        centerOnScreen();
-
+    private void clearForm() {
         emailField.setText("");
         passwordField.setText("");
     }
@@ -52,7 +55,7 @@ public class Login extends MyFrame {
         User tempUser = User.builder().email(emailField.getText()).password(passwordField.getText()).build();
 
         if (AuthController.auth(tempUser)) {
-            showMessageDialog(null, "Sucess");
+            showMessageDialog(null, "Success");
         } else {
             showMessageDialog(null, "Error");
         }

@@ -19,6 +19,8 @@ public class Signup extends MyFrame {
     private JButton registerButton;
 
     public Signup() {
+        super();
+
         setTitle("Cadastro");
         setSize(400, 300);
         setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
@@ -32,13 +34,14 @@ public class Signup extends MyFrame {
         registerButton.addActionListener(e -> {
             signup();
         });
+
+        onOpen.addListener(e -> {
+            centerOnScreen();
+            clearForm();
+        });
     }
 
-    @Override
-    public void open(Object... data) {
-        super.open();
-        centerOnScreen();
-
+    private void clearForm() {
         nameField.setText("");
         emailField.setText("");
         passwordField.setText("");

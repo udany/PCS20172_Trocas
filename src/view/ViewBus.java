@@ -28,7 +28,7 @@ public class ViewBus {
                     screen = cons.newInstance();
                     screens.put(name, screen);
                 }catch (Exception e){
-
+                    System.out.println(e.getMessage());
                 }
             }
 

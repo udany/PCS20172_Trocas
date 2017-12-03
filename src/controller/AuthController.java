@@ -13,7 +13,6 @@ public class AuthController {
         if (actual.size() > 0) {
             User actualUser = actual.get(0);
             if (actualUser.getPassword().equals(u.getPassword())) {
-                showMessageDialog(null, "Sucess");
                 return true;
             }
         }
