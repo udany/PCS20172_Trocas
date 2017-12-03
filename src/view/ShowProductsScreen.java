@@ -15,7 +15,6 @@ public class ShowProductsScreen extends JFrame
 	public static void main(String[] args) 
     {
 		ArrayList<Product> products = new ArrayList<Product>();
-		products = Product.generate();
     	ShowProductsScreen productsScreen = new ShowProductsScreen(products);
     	productsScreen.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
     	productsScreen.setVisible(true);
@@ -30,7 +29,6 @@ public class ShowProductsScreen extends JFrame
     public ShowProductsScreen() 
     {
         super("Produtos");
-        initialize(Product.generate());
     }
 
     private void initialize(ArrayList<Product> products) 

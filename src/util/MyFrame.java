@@ -7,12 +7,14 @@ import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
 
 public class MyFrame extends JFrame {
-    public Event<ActionEvent> onClose;
-    public Event<ActionEvent> onOpen;
-    public Event<ActionEvent> onFocus;
-    public Event<ActionEvent> onBlur;
+    public Event<EventData> onClose;
+    public Event<EventData> onOpen;
+    public Event<EventData> onFocus;
+    public Event<EventData> onBlur;
 
     protected MyFrame(){
+        setNimbusLookAndFeel();
+
         onClose = new Event<>();
         onOpen = new Event<>();
         onFocus = new Event<>();
@@ -71,7 +73,7 @@ public class MyFrame extends JFrame {
     }
 
     public void open(Object... data){
-        onOpen.emit();
+        onOpen.emit(new EventData(data));
         setVisible(true);
     }
 

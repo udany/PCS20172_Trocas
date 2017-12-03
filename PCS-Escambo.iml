@@ -8,5 +8,7 @@
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="library" name="lombok" level="project" />
+    <orderEntry type="library" name="syntheticaClassy" level="project" />
+    <orderEntry type="library" name="synthetica" level="project" />
   </component>
 </module>

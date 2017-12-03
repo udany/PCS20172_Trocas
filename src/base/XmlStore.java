@@ -73,6 +73,7 @@ public class XmlStore<T extends BaseModel> extends BaseStore<T> {
 
         data = collection;
         lastRead = GetLastWrite();
+        onChange.emit();
     }
 
     private void Load(){
@@ -81,7 +82,10 @@ public class XmlStore<T extends BaseModel> extends BaseStore<T> {
 
         SerializableList<T> data = XmlSerializer.load(file, classes.toArray(new Class[classes.size()]));
 
-        if (data!=null && data.list != null) this.data = data.list;
+        if (data!=null && data.list != null) {
+            this.data = data.list;
+            onChange.emit();
+        }
         lastRead = GetLastWrite();
     }
 

@@ -17,7 +17,7 @@ import java.util.Date;
 @NoArgsConstructor
 @AllArgsConstructor
 public class Counter extends BaseModel {
-    @Getter @Setter private Integer userId;
+    @Getter @Setter private int userId;
     @Getter @Setter private String name;
     @Getter @Setter private String description;
 
@@ -26,5 +26,10 @@ public class Counter extends BaseModel {
     @XmlTransient
     public User getUser(){
         return this.userId > 0 ? User.store.GetById(this.userId) : null;
+    }
+
+    @Override
+    public String toString(){
+        return name;
     }
 }

@@ -55,7 +55,8 @@ public class Login extends MyFrame {
         User tempUser = User.builder().email(emailField.getText()).password(passwordField.getText()).build();
 
         if (AuthController.auth(tempUser)) {
-            showMessageDialog(null, "Success");
+            ViewBus.get().open(Home.class);
+            close();
         } else {
             showMessageDialog(null, "Error");
         }
