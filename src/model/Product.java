@@ -17,11 +17,17 @@ public class Product extends BaseModel
     @Getter @Setter private String name;
     @Getter @Setter private String description;
     @Getter @Setter private ProductCondition condition;
+    @Getter @Setter private int categoryId;
 
     public static XmlStore<Product> store = new XmlStore<Product>("store/product.xml", Product.class);
 
     @XmlTransient
     public User getUser(){
         return this.userId > 0 ? User.store.GetById(this.userId) : null;
+    }
+
+    @XmlTransient
+    public ProductCategory getCategory(){
+        return this.userId > 0 ? ProductCategory.store.GetById(this.categoryId) : null;
     }
 }

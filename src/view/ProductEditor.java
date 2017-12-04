@@ -2,75 +2,76 @@ package view;
 
 import controller.AuthController;
 import model.Product;
+import model.ProductCategory;
 import model.ProductCondition;
-import util.ArrayListComboModel;
-import util.ArrayListModel;
-import util.MyFrame;
-import util.StringCellRenderer;
+import util.*;
 
 import javax.swing.*;
 import java.awt.*;
 import java.lang.reflect.Array;
 import java.util.Arrays;
+import java.util.concurrent.locks.Condition;
 
-public class ProductEditor extends MyFrame {
-
+public class ProductEditor extends MyFrameEditor<Product> {
     private JPanel mainPanel;
     private JTextField nameField;
     private JTextArea descriptionField;
     private JButton saveButton;
     private JButton cancelButton;
-    private JComboBox conditionSelect;
-
-    private Product current;
+    private JComboBox<ProductCondition> conditionSelect;
+    private JComboBox<ProductCategory> categorySelect;
 
     public ProductEditor() {
         super();
 
         setTitle("");
         setSize(600, 450);
-
         setContentPane(mainPanel);
 
-        /// Fill condition
-        conditionSelect.setModel(new ArrayListComboModel(Arrays.asList(ProductCondition.values())));
-        conditionSelect.setRenderer(new StringCellRenderer<ProductCondition>(x -> x != null ? x.getLabel() : ""));
-
-        onOpen.addListener(e -> {
-            if (e.data.length > 0 && e.data[0] instanceof Product) {
-                current = (Product) e.data[0];
-                setTitle("Editando Produto");
-            } else {
-                current = new Product();
-                current.setUserId(AuthController.getCurrentUser().getId());
-                setTitle("Novo Produto");
-            }
-
-            fillForm();
-
-            centerOnScreen();
-        });
-
         saveButton.addActionListener(e -> {
-            readForm();
-            Product.store.Save(current);
+            save();
             close();
         });
         cancelButton.addActionListener(e -> {
             close();
         });
+
+        /// Fill Condition Combo
+        conditionSelect.setModel(new ArrayListComboModel(Arrays.asList(ProductCondition.values())));
+        conditionSelect.setRenderer(new StringCellRenderer<ProductCondition>(x -> x != null ? x.getLabel() : ""));
+
+        /// Fill Category Combo
+        categorySelect.setModel(new ArrayListComboModel(ProductCategory.store.List()));
+        categorySelect.setRenderer(new StringCellRenderer<ProductCategory>(x -> x != null ? x.getName() : ""));
     }
 
-    private void fillForm() {
+    protected Product create() {
+        return new Product();
+    }
+
+    protected void save() {
+        readForm();
+        Product.store.Save(current);
+        onSave.emit();
+    }
+
+    protected void fillForm() {
         nameField.setText(current.getName());
         descriptionField.setText(current.getDescription());
         conditionSelect.setSelectedItem(current.getCondition());
+        categorySelect.setSelectedItem(current.getCategory());
     }
 
-    private void readForm() {
+    protected void readForm() {
         current.setName(nameField.getText());
         current.setDescription(descriptionField.getText());
         current.setCondition((ProductCondition) conditionSelect.getSelectedItem());
+        ProductCategory c = (ProductCategory) categorySelect.getSelectedItem();
+        current.setCategoryId(c.getId());
+    }
+
+    protected String getModelName() {
+        return "Produto";
     }
 
     {
@@ -125,8 +126,9 @@ public class ProductEditor extends MyFrame {
         label2.setText("Descrição");
         gbc = new GridBagConstraints();
         gbc.gridx = 0;
-        gbc.gridy = 2;
+        gbc.gridy = 3;
         gbc.anchor = GridBagConstraints.NORTHWEST;
+        gbc.ipady = 5;
         panel1.add(label2, gbc);
         descriptionField = new JTextArea();
         descriptionField.setLineWrap(true);
@@ -134,7 +136,7 @@ public class ProductEditor extends MyFrame {
         descriptionField.setWrapStyleWord(true);
         gbc = new GridBagConstraints();
         gbc.gridx = 2;
-        gbc.gridy = 2;
+        gbc.gridy = 3;
         gbc.weighty = 1.0;
         gbc.fill = GridBagConstraints.BOTH;
         panel1.add(descriptionField, gbc);
@@ -143,7 +145,7 @@ public class ProductEditor extends MyFrame {
         gbc = new GridBagConstraints();
         gbc.gridx = 0;
         gbc.gridy = 1;
-        gbc.anchor = GridBagConstraints.NORTHWEST;
+        gbc.anchor = GridBagConstraints.WEST;
         panel1.add(label3, gbc);
         conditionSelect = new JComboBox();
         gbc = new GridBagConstraints();
@@ -152,6 +154,20 @@ public class ProductEditor extends MyFrame {
         gbc.anchor = GridBagConstraints.WEST;
         gbc.fill = GridBagConstraints.HORIZONTAL;
         panel1.add(conditionSelect, gbc);
+        final JLabel label4 = new JLabel();
+        label4.setText("Categoria");
+        gbc = new GridBagConstraints();
+        gbc.gridx = 0;
+        gbc.gridy = 2;
+        gbc.anchor = GridBagConstraints.WEST;
+        panel1.add(label4, gbc);
+        categorySelect = new JComboBox();
+        gbc = new GridBagConstraints();
+        gbc.gridx = 2;
+        gbc.gridy = 2;
+        gbc.anchor = GridBagConstraints.WEST;
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+        panel1.add(categorySelect, gbc);
         final JPanel spacer2 = new JPanel();
         gbc = new GridBagConstraints();
         gbc.gridx = 1;
