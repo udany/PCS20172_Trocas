@@ -2,6 +2,7 @@ package controller;
 
 import lombok.Getter;
 import model.User;
+import model.UserGroup;
 
 import java.util.List;
 
@@ -22,5 +23,21 @@ public class AuthController {
         }
 
         return false;
+    }
+
+    public static boolean register(User user) throws Exception{
+        //// VALIDATION
+        Boolean userExists = User.store.List(x -> x.getEmail().equals(user.getEmail())).size() > 0;
+        if (userExists) {
+            throw new Exception("Já existe um usuário com esse email!");
+        }
+
+        if (user.getGroups().size() == 0){
+            user.getGroups().add(UserGroup.store.GetById(UserGroup.defaultUserGroup));
+        }
+
+        User.store.Save(user);
+
+        return true;
     }
 }
