@@ -1,9 +1,12 @@
 package view;
 
+import base.BaseModel;
+import base.BaseStore;
 import base.SyncedListModel;
 import controller.AuthController;
 import model.Counter;
 import model.Product;
+import model.ProductCategory;
 import model.User;
 import util.ListDoubleClickAdapter;
 import util.StringCellRenderer;
@@ -12,23 +15,32 @@ import util.MyFrame;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
+import java.util.function.Predicate;
 
 public class Home extends MyFrame {
-    private JTabbedPane tabbedPane1;
     private JPanel mainPanel;
-    private JList counterList;
-    private JPanel myCounters;
-    private JPanel myProducts;
-    private JButton editCounterButton;
-    private JButton newCounterButton;
-    private JButton editProductButton;
-    private JButton newProductButton;
-    private JList productList;
 
-    private SyncedListModel<Counter> countersModel;
-    private SyncedListModel<Product> productsModel;
+    private JTabbedPane tabbedPane1;
+
+    private JPanel myCountersPanel;
+    private JList<Counter> counterList;
+    private JButton newCounterButton;
+    private JButton editCounterButton;
+
+    private JPanel myProductsPanel;
+    private JList<Product> productList;
+    private JButton newProductButton;
+    private JButton editProductButton;
+
+    private JPanel categoryPanel;
+    private JList<ProductCategory> categoryList;
+    private JButton newCategoryButton;
+    private JButton editCategoryButton;
+
+
+    private SyncedListModel<Counter> countersModel = new SyncedListModel<>(null, null);
+    private SyncedListModel<Product> productsModel = new SyncedListModel<>(null, null);
+    private SyncedListModel<ProductCategory> categoriesModel = new SyncedListModel<>(null, null);
 
     public Home() {
         super();
@@ -39,60 +51,19 @@ public class Home extends MyFrame {
         setContentPane(mainPanel);
         createMenu();
 
+        ////// Counters
+        countersSetup();
+
+        ////// Products
+        productsSetup();
+
+        ////// Categories
+        categorySteup();
+
         ////// On Open
         onOpen.addListener(e -> {
             centerOnScreen();
             fill();
-        });
-
-        ////// Counters
-        /// List
-        countersModel = new SyncedListModel<>(x -> x.getUserId() != 0, Counter.store);
-        counterList.setModel(countersModel);
-
-        counterList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-        counterList.addListSelectionListener(e -> {
-            editCounterButton.setEnabled(true);
-        });
-        counterList.addMouseListener(new ListDoubleClickAdapter<Counter>(x -> {
-            ViewBus.get().open(CounterEditor.class, x);
-        }));
-
-        counterList.setCellRenderer(new StringCellRenderer<Counter>(x -> x.getId() + " - " + x.getName()));
-
-        /// New
-        newCounterButton.addActionListener(e -> {
-            ViewBus.get().open(CounterEditor.class);
-        });
-
-        /// Edit
-        editCounterButton.addActionListener(e -> {
-            ViewBus.get().open(CounterEditor.class, counterList.getSelectedValue());
-        });
-
-        ////// Products
-        /// List
-        productsModel = new SyncedListModel<>(x -> x.getUserId() != 0, Product.store);
-        productList.setModel(productsModel);
-
-        productList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-        productList.addListSelectionListener(e -> {
-            editProductButton.setEnabled(true);
-        });
-        productList.addMouseListener(new ListDoubleClickAdapter<Product>(x -> {
-            ViewBus.get().open(ProductEditor.class, x);
-        }));
-
-        productList.setCellRenderer(new StringCellRenderer<Product>(x -> x.getId() + " - " + x.getName()));
-
-        /// New
-        newProductButton.addActionListener(e -> {
-            ViewBus.get().open(ProductEditor.class);
-        });
-
-        /// Edit
-        editProductButton.addActionListener(e -> {
-            ViewBus.get().open(ProductEditor.class, productList.getSelectedValue());
         });
     }
 
@@ -108,6 +79,82 @@ public class Home extends MyFrame {
         ////// Products
         /// List
         productsModel.setQuery(x -> x.getUserId() == current.getId());
+    }
+
+    private <E extends BaseModel> void setupCrud(
+            SyncedListModel<E> model,
+            BaseStore<E> store,
+            StringCellRenderer<E> renderer,
+
+            JList<E> list,
+            JButton newButton,
+            JButton editButton,
+            Class editorView
+    ) {
+        // Model
+        model.setQuery(x -> x != null);
+        model.setStore(store);
+
+        /// List
+        list.setModel(model);
+
+        list.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+
+        list.addListSelectionListener(e -> {
+            editButton.setEnabled(true);
+        });
+
+        list.addMouseListener(new ListDoubleClickAdapter<E>(x -> {
+            ViewBus.get().open(editorView, x);
+        }));
+
+        list.setCellRenderer(renderer);
+
+        /// New
+        newButton.addActionListener(e -> {
+            ViewBus.get().open(editorView);
+        });
+
+        /// Edit
+        editButton.addActionListener(e -> {
+            ViewBus.get().open(editorView, list.getSelectedValue());
+        });
+    }
+
+    private void countersSetup() {
+        setupCrud(
+                countersModel,
+                Counter.store,
+                new StringCellRenderer<Counter>(x -> x.getId() + " - " + x.getName()),
+
+                counterList,
+                newCounterButton,
+                editCounterButton,
+                CounterEditor.class);
+    }
+
+    private void productsSetup() {
+        setupCrud(
+                productsModel,
+                Product.store,
+                new StringCellRenderer<Product>(x -> x.getId() + " - " + x.getName()),
+
+                productList,
+                newProductButton,
+                editProductButton,
+                ProductEditor.class);
+    }
+
+    private void categorySteup() {
+        setupCrud(
+                categoriesModel,
+                ProductCategory.store,
+                new StringCellRenderer<ProductCategory>(x -> x.getId() + " - " + x.getName()),
+
+                categoryList,
+                newCategoryButton,
+                editCategoryButton,
+                CategoryEditor.class);
     }
 
     private void createMenu() {
@@ -163,9 +210,9 @@ public class Home extends MyFrame {
         gbc.weighty = 1.0;
         gbc.fill = GridBagConstraints.BOTH;
         mainPanel.add(tabbedPane1, gbc);
-        myCounters = new JPanel();
-        myCounters.setLayout(new GridBagLayout());
-        tabbedPane1.addTab("Meus Balcões", myCounters);
+        myCountersPanel = new JPanel();
+        myCountersPanel.setLayout(new GridBagLayout());
+        tabbedPane1.addTab("Meus Balcões", myCountersPanel);
         final JScrollPane scrollPane1 = new JScrollPane();
         gbc = new GridBagConstraints();
         gbc.gridx = 0;
@@ -173,7 +220,7 @@ public class Home extends MyFrame {
         gbc.weightx = 1.0;
         gbc.weighty = 1.0;
         gbc.fill = GridBagConstraints.BOTH;
-        myCounters.add(scrollPane1, gbc);
+        myCountersPanel.add(scrollPane1, gbc);
         counterList = new JList();
         scrollPane1.setViewportView(counterList);
         final JPanel panel1 = new JPanel();
@@ -182,7 +229,7 @@ public class Home extends MyFrame {
         gbc.gridx = 0;
         gbc.gridy = 1;
         gbc.fill = GridBagConstraints.BOTH;
-        myCounters.add(panel1, gbc);
+        myCountersPanel.add(panel1, gbc);
         editCounterButton = new JButton();
         editCounterButton.setEnabled(false);
         editCounterButton.setText("Editar");
@@ -212,9 +259,9 @@ public class Home extends MyFrame {
         gbc.weightx = 1.0;
         gbc.fill = GridBagConstraints.HORIZONTAL;
         panel1.add(spacer2, gbc);
-        myProducts = new JPanel();
-        myProducts.setLayout(new GridBagLayout());
-        tabbedPane1.addTab("Meus Produtos", myProducts);
+        myProductsPanel = new JPanel();
+        myProductsPanel.setLayout(new GridBagLayout());
+        tabbedPane1.addTab("Meus Produtos", myProductsPanel);
         final JScrollPane scrollPane2 = new JScrollPane();
         gbc = new GridBagConstraints();
         gbc.gridx = 0;
@@ -222,7 +269,7 @@ public class Home extends MyFrame {
         gbc.weightx = 1.0;
         gbc.weighty = 1.0;
         gbc.fill = GridBagConstraints.BOTH;
-        myProducts.add(scrollPane2, gbc);
+        myProductsPanel.add(scrollPane2, gbc);
         productList = new JList();
         scrollPane2.setViewportView(productList);
         final JPanel panel2 = new JPanel();
@@ -231,7 +278,7 @@ public class Home extends MyFrame {
         gbc.gridx = 0;
         gbc.gridy = 1;
         gbc.fill = GridBagConstraints.BOTH;
-        myProducts.add(panel2, gbc);
+        myProductsPanel.add(panel2, gbc);
         final JPanel spacer3 = new JPanel();
         gbc = new GridBagConstraints();
         gbc.gridx = 0;
@@ -260,6 +307,55 @@ public class Home extends MyFrame {
         gbc.gridy = 0;
         gbc.fill = GridBagConstraints.HORIZONTAL;
         panel2.add(newProductButton, gbc);
+        categoryPanel = new JPanel();
+        categoryPanel.setLayout(new GridBagLayout());
+        tabbedPane1.addTab("Categorias", categoryPanel);
+        final JScrollPane scrollPane3 = new JScrollPane();
+        gbc = new GridBagConstraints();
+        gbc.gridx = 0;
+        gbc.gridy = 0;
+        gbc.weightx = 1.0;
+        gbc.weighty = 1.0;
+        gbc.fill = GridBagConstraints.BOTH;
+        categoryPanel.add(scrollPane3, gbc);
+        categoryList = new JList();
+        scrollPane3.setViewportView(categoryList);
+        final JPanel panel3 = new JPanel();
+        panel3.setLayout(new GridBagLayout());
+        gbc = new GridBagConstraints();
+        gbc.gridx = 0;
+        gbc.gridy = 1;
+        gbc.fill = GridBagConstraints.BOTH;
+        categoryPanel.add(panel3, gbc);
+        final JPanel spacer5 = new JPanel();
+        gbc = new GridBagConstraints();
+        gbc.gridx = 0;
+        gbc.gridy = 0;
+        gbc.weightx = 1.0;
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+        panel3.add(spacer5, gbc);
+        final JPanel spacer6 = new JPanel();
+        gbc = new GridBagConstraints();
+        gbc.gridx = 2;
+        gbc.gridy = 0;
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+        panel3.add(spacer6, gbc);
+        editCategoryButton = new JButton();
+        editCategoryButton.setEnabled(false);
+        editCategoryButton.setText("Editar");
+        gbc = new GridBagConstraints();
+        gbc.gridx = 1;
+        gbc.gridy = 0;
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+        panel3.add(editCategoryButton, gbc);
+        newCategoryButton = new JButton();
+        newCategoryButton.setEnabled(true);
+        newCategoryButton.setText("Nova");
+        gbc = new GridBagConstraints();
+        gbc.gridx = 3;
+        gbc.gridy = 0;
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+        panel3.add(newCategoryButton, gbc);
     }
 
     /**

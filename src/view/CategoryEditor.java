@@ -34,6 +34,7 @@ public class CategoryEditor extends MyFrameEditor<ProductCategory> {
     }
 
     protected void save() {
+        readForm();
         ProductCategory.store.Save(current);
         onSave.emit();
     }

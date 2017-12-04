@@ -17,7 +17,7 @@
         <properties/>
         <border type="none"/>
         <children>
-          <grid id="5db74" binding="myCounters" layout-manager="GridBagLayout">
+          <grid id="5db74" binding="myCountersPanel" layout-manager="GridBagLayout">
             <constraints>
               <tabbedpane title="Meus Balcões"/>
             </constraints>
@@ -84,7 +84,7 @@
               </grid>
             </children>
           </grid>
-          <grid id="843f0" binding="myProducts" layout-manager="GridBagLayout">
+          <grid id="843f0" binding="myProductsPanel" layout-manager="GridBagLayout">
             <constraints>
               <tabbedpane title="Meus Produtos"/>
             </constraints>
@@ -142,6 +142,71 @@
                     </constraints>
                     <properties>
                       <text value="Novo"/>
+                    </properties>
+                  </component>
+                </children>
+              </grid>
+            </children>
+          </grid>
+          <grid id="5b47" binding="categoryPanel" layout-manager="GridBagLayout">
+            <constraints>
+              <tabbedpane title="Categorias"/>
+            </constraints>
+            <properties/>
+            <border type="none"/>
+            <children>
+              <scrollpane id="cca3b">
+                <constraints>
+                  <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="7" hsize-policy="7" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
+                  <gridbag weightx="1.0" weighty="1.0"/>
+                </constraints>
+                <properties/>
+                <border type="none"/>
+                <children>
+                  <component id="dd90f" class="javax.swing.JList" binding="categoryList">
+                    <constraints/>
+                    <properties/>
+                  </component>
+                </children>
+              </scrollpane>
+              <grid id="5d19c" layout-manager="GridBagLayout">
+                <constraints>
+                  <grid row="1" column="0" row-span="1" col-span="1" vsize-policy="3" hsize-policy="3" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
+                  <gridbag weightx="0.0" weighty="0.0"/>
+                </constraints>
+                <properties/>
+                <border type="none"/>
+                <children>
+                  <hspacer id="3645d">
+                    <constraints>
+                      <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="1" hsize-policy="6" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
+                      <gridbag weightx="1.0" weighty="0.0"/>
+                    </constraints>
+                  </hspacer>
+                  <hspacer id="6af1a">
+                    <constraints>
+                      <grid row="0" column="2" row-span="1" col-span="1" vsize-policy="1" hsize-policy="6" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
+                      <gridbag weightx="0.0" weighty="0.0"/>
+                    </constraints>
+                  </hspacer>
+                  <component id="5f695" class="javax.swing.JButton" binding="editCategoryButton">
+                    <constraints>
+                      <grid row="0" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
+                      <gridbag weightx="0.0" weighty="0.0"/>
+                    </constraints>
+                    <properties>
+                      <enabled value="false"/>
+                      <text value="Editar"/>
+                    </properties>
+                  </component>
+                  <component id="ee2cf" class="javax.swing.JButton" binding="newCategoryButton">
+                    <constraints>
+                      <grid row="0" column="3" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
+                      <gridbag weightx="0.0" weighty="0.0"/>
+                    </constraints>
+                    <properties>
+                      <enabled value="true"/>
+                      <text value="Nova"/>
                     </properties>
                   </component>
                 </children>
