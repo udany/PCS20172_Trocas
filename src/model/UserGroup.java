@@ -4,6 +4,7 @@ import base.BaseModel;
 import base.BaseStore;
 import base.XmlStore;
 import lombok.*;
+import util.SerializableList;
 
 import javax.xml.bind.annotation.XmlRootElement;
 
@@ -12,7 +13,20 @@ import javax.xml.bind.annotation.XmlRootElement;
 @NoArgsConstructor
 @AllArgsConstructor
 public class UserGroup extends BaseModel {
+    public static final int defaultUserGroup = 3;
+
     @Getter @Setter private String name;
 
-    public static BaseStore store = new XmlStore<UserGroup>("store/usergroup.xml", UserGroup.class);
+    @Setter private SerializableList<Permission> permissions;
+    public SerializableList<Permission> getPermissions(){
+        if (permissions == null) permissions = new SerializableList<>();
+        return permissions;
+    }
+
+    public static XmlStore<UserGroup> store = new XmlStore<UserGroup>("store/usergroup.xml", UserGroup.class, Permission.class);
+
+    @Override
+    protected BaseStore getStore() {
+        return UserGroup.store;
+    }
 }

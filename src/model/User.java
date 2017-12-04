@@ -1,6 +1,7 @@
 package model;
 
 import base.BaseModel;
+import base.ModelList;
 import base.XmlStore;
 import lombok.*;
 
@@ -20,8 +21,15 @@ public class User extends BaseModel {
     @Getter @Setter private String email;
     @Getter @Setter private Date birthday;
     @Getter @Setter private double rating;
+    @Setter private ModelList<UserGroup> groups;
 
-    public static XmlStore<User> store = new XmlStore<User>("store/user.xml", User.class);
+    public ModelList<UserGroup> getGroups(){
+        if (groups == null) groups = new ModelList<>();
+
+        return groups;
+    }
+
+    public static XmlStore<User> store = new XmlStore<>("store/user.xml", User.class);
 
     public static class UserBuilder {
         public UserBuilder password(String password) {
