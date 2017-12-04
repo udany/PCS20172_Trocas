@@ -34,7 +34,7 @@ public class ProductEditor extends MyFrame {
 
         /// Fill condition
         conditionSelect.setModel(new ArrayListComboModel(Arrays.asList(ProductCondition.values())));
-        conditionSelect.setRenderer(new StringCellRenderer<ProductCondition>(x -> x.getLabel()));
+        conditionSelect.setRenderer(new StringCellRenderer<ProductCondition>(x -> x != null ? x.getLabel() : ""));
 
         onOpen.addListener(e -> {
             if (e.data.length > 0 && e.data[0] instanceof Product) {
