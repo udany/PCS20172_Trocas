@@ -3,6 +3,7 @@ package model;
 import base.BaseModel;
 import base.XmlStore;
 import lombok.*;
+import model.enums.ProductCondition;
 
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;

@@ -6,11 +6,9 @@
 package main;
 
 import controller.AuthController;
-import model.Permission;
 import model.User;
 import model.UserGroup;
 import view.Home;
-import view.Signup;
 import view.ViewBus;
 
 /**

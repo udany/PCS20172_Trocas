@@ -4,14 +4,12 @@ import base.SyncedListModel;
 import controller.AuthController;
 import model.Product;
 import model.ProductCategory;
-import model.ProductCondition;
+import model.enums.ProductCondition;
 import util.*;
 
 import javax.swing.*;
 import java.awt.*;
-import java.lang.reflect.Array;
 import java.util.Arrays;
-import java.util.concurrent.locks.Condition;
 
 public class ProductEditor extends MyFrameEditor<Product> {
     private JPanel mainPanel;

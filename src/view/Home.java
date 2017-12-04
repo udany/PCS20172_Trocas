@@ -5,6 +5,7 @@ import base.BaseStore;
 import base.SyncedListModel;
 import controller.AuthController;
 import model.*;
+import model.enums.Permission;
 import util.ListDoubleClickAdapter;
 import util.StringCellRenderer;
 import util.MyFrame;

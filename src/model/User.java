@@ -4,6 +4,7 @@ import base.BaseModel;
 import base.ModelList;
 import base.XmlStore;
 import lombok.*;
+import model.enums.Permission;
 
 import javax.xml.bind.annotation.XmlRootElement;
 import java.nio.charset.StandardCharsets;

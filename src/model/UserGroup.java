@@ -4,6 +4,7 @@ import base.BaseModel;
 import base.BaseStore;
 import base.XmlStore;
 import lombok.*;
+import model.enums.Permission;
 import util.SerializableList;
 
 import javax.xml.bind.annotation.XmlRootElement;
