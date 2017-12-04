@@ -13,5 +13,5 @@ import javax.xml.bind.annotation.XmlRootElement;
 public class ProductCategory extends BaseModel {
     @Getter @Setter private String name;
 
-    public static XmlStore<ProductCategory> store = new XmlStore<ProductCategory>("store/product_category.xml", ProductCategory.class);
+    public static XmlStore<ProductCategory> store = new XmlStore<>("store/product_category.xml", ProductCategory.class);
 }

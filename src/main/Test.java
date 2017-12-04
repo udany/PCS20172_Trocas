@@ -21,16 +21,14 @@ public class Test {
     
     public static void main(String[] args) {
         //ViewBus.get().open(Signup.class);
-//        UserGroup.store.Save(UserGroup.builder().name("Admin").build());
-//        UserGroup.store.Save(UserGroup.builder().name("Mod").build());
-//        UserGroup.store.Save(UserGroup.builder().name("User").build());
-
-        UserGroup ug = UserGroup.store.GetById(1);
-        ug.getPermissions().add(Permission.CategoryManagement);
-        ug.save();
-
 
         AuthController.auth(User.builder().email("d").password("123456").build());
         ViewBus.get().open(Home.class);
+    }
+
+    private static void createUserGroups(){
+        UserGroup.store.Save(UserGroup.builder().name("Admin").build());
+        UserGroup.store.Save(UserGroup.builder().name("Mod").build());
+        UserGroup.store.Save(UserGroup.builder().name("User").build());
     }
 }
