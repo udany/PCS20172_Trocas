@@ -18,6 +18,10 @@ public class SyncedListModel<E extends BaseModel> extends AbstractListModel<E> {
         list.setQuery(predicate);
     }
 
+    public void setStore(BaseStore<E> store){
+        list.setStore(store);
+    }
+
     @Override
     public int getSize() {
         return list.size();

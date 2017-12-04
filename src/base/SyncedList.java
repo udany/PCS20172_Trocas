@@ -14,10 +14,9 @@ public class SyncedList<E extends BaseModel> extends ArrayList<E> {
 
     public SyncedList(Predicate<E> predicate, BaseStore<E> eStore){
         query = predicate;
-        store = eStore;
+        setStore(eStore);
 
         load();
-        store.onChange.addListener(e -> load());
     }
 
     public void setQuery(Predicate<E> predicate){
@@ -25,7 +24,18 @@ public class SyncedList<E extends BaseModel> extends ArrayList<E> {
         load();
     }
 
+    public void setStore(BaseStore<E> s){
+        store = s;
+        if (store != null){
+            store.onChange.addListener(e -> load());
+        }
+        load();
+    }
+
     private void load(){
+        if (this.store == null) return;
+        if (this.query == null) return;
+
         List<E> results = store.List(query);
         clear();
         addAll(results);
