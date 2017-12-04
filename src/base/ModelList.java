@@ -39,10 +39,12 @@ public class ModelList<T extends BaseModel> extends SerializableList<Integer> {
 
 
     @XmlElement(name = "id")
-    public List<Integer> getList() {
-        return models.stream().filter(x -> x != null).map(x -> x.getId()).collect(Collectors.toList());
-    }
+    private List<Integer> list;
 
+    public List<Integer> getList() {
+        if (list != null) return  list;
+        return getModels().stream().filter(x -> x != null).map(x -> x.getId()).collect(Collectors.toList());
+    }
     public void setList(List<Integer> ids){
         models = ids.stream().map(x -> this.store.GetById(x)).collect(Collectors.toList());
     }

@@ -4,10 +4,7 @@ import base.BaseModel;
 import base.BaseStore;
 import base.SyncedListModel;
 import controller.AuthController;
-import model.Counter;
-import model.Product;
-import model.ProductCategory;
-import model.User;
+import model.*;
 import util.ListDoubleClickAdapter;
 import util.StringCellRenderer;
 import util.MyFrame;
@@ -15,12 +12,11 @@ import util.MyFrame;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
-import java.util.function.Predicate;
 
 public class Home extends MyFrame {
     private JPanel mainPanel;
 
-    private JTabbedPane tabbedPane1;
+    private JTabbedPane tabbedPane;
 
     private JPanel myCountersPanel;
     private JList<Counter> counterList;
@@ -79,6 +75,14 @@ public class Home extends MyFrame {
         ////// Products
         /// List
         productsModel.setQuery(x -> x.getUserId() == current.getId());
+
+        ////// Category
+        /// Verify Permission
+        if (current.hasPermission(Permission.CategoryManagement)) {
+            tabbedPane.setEnabledAt(2, true);
+        } else {
+            tabbedPane.setEnabledAt(2, false);
+        }
     }
 
     private <E extends BaseModel> void setupCrud(
@@ -201,7 +205,7 @@ public class Home extends MyFrame {
     private void $$$setupUI$$$() {
         mainPanel = new JPanel();
         mainPanel.setLayout(new GridBagLayout());
-        tabbedPane1 = new JTabbedPane();
+        tabbedPane = new JTabbedPane();
         GridBagConstraints gbc;
         gbc = new GridBagConstraints();
         gbc.gridx = 0;
@@ -209,10 +213,10 @@ public class Home extends MyFrame {
         gbc.weightx = 1.0;
         gbc.weighty = 1.0;
         gbc.fill = GridBagConstraints.BOTH;
-        mainPanel.add(tabbedPane1, gbc);
+        mainPanel.add(tabbedPane, gbc);
         myCountersPanel = new JPanel();
         myCountersPanel.setLayout(new GridBagLayout());
-        tabbedPane1.addTab("Meus Balcões", myCountersPanel);
+        tabbedPane.addTab("Meus Balcões", myCountersPanel);
         final JScrollPane scrollPane1 = new JScrollPane();
         gbc = new GridBagConstraints();
         gbc.gridx = 0;
@@ -261,7 +265,7 @@ public class Home extends MyFrame {
         panel1.add(spacer2, gbc);
         myProductsPanel = new JPanel();
         myProductsPanel.setLayout(new GridBagLayout());
-        tabbedPane1.addTab("Meus Produtos", myProductsPanel);
+        tabbedPane.addTab("Meus Produtos", myProductsPanel);
         final JScrollPane scrollPane2 = new JScrollPane();
         gbc = new GridBagConstraints();
         gbc.gridx = 0;
@@ -309,7 +313,7 @@ public class Home extends MyFrame {
         panel2.add(newProductButton, gbc);
         categoryPanel = new JPanel();
         categoryPanel.setLayout(new GridBagLayout());
-        tabbedPane1.addTab("Categorias", categoryPanel);
+        tabbedPane.addTab("Categorias", categoryPanel);
         final JScrollPane scrollPane3 = new JScrollPane();
         gbc = new GridBagConstraints();
         gbc.gridx = 0;

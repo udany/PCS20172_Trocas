@@ -29,4 +29,8 @@ public class UserGroup extends BaseModel {
     protected BaseStore getStore() {
         return UserGroup.store;
     }
+
+    public boolean hasPermission(Permission p){
+        return permissions.getList().indexOf(p) >= 0;
+    }
 }

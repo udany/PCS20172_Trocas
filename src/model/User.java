@@ -21,12 +21,15 @@ public class User extends BaseModel {
     @Getter @Setter private String email;
     @Getter @Setter private Date birthday;
     @Getter @Setter private double rating;
-    @Setter private ModelList<UserGroup> groups;
+    private ModelList<UserGroup> groups;
 
     public ModelList<UserGroup> getGroups(){
-        if (groups == null) groups = new ModelList<>();
+        if (groups == null) groups = new ModelList<>(UserGroup.store);
 
         return groups;
+    }
+    public void setGroups(ModelList<UserGroup> m ){
+        if (m != null ) getGroups().setList(m.getList());
     }
 
     public static XmlStore<User> store = new XmlStore<>("store/user.xml", User.class);
@@ -50,5 +53,13 @@ public class User extends BaseModel {
         }
 
         return null;
+    }
+
+
+    public boolean hasPermission(Permission p){
+        for (UserGroup g : getGroups().getModels()){
+            if (g.hasPermission(p)) return true;
+        }
+        return false;
     }
 }
