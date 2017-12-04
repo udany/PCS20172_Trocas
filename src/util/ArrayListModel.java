@@ -9,7 +9,7 @@ import javax.swing.*;
 import java.util.List;
 import java.util.function.Predicate;
 
-public class ArrayListModel<E> extends AbstractListModel<E> {
+public class ArrayListModel<E> extends AbstractListModel<E> implements ComboBoxModel<E> {
     @Getter protected List<E> list;
 
     public ArrayListModel(List<E> list){
@@ -53,5 +53,16 @@ public class ArrayListModel<E> extends AbstractListModel<E> {
     }
     public void remove(List<E> items){
         for (E item : items) remove(item);
+    }
+
+    private E selected;
+    @Override
+    public void setSelectedItem(Object anItem) {
+        selected = (E)anItem;
+    }
+
+    @Override
+    public Object getSelectedItem() {
+        return selected;
     }
 }
