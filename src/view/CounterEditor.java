@@ -98,14 +98,14 @@ public class CounterEditor extends MyFrame {
     private void fillForm() {
         nameField.setText(currentCounter.getName());
         descriptionField.setText(currentCounter.getDescription());
-        itemModel.setList(currentCounter.getItems().list);
+        itemModel.setList(currentCounter.getItems().getList());
         productList.clearSelection();
     }
 
     private void readForm() {
         currentCounter.setName(nameField.getText());
         currentCounter.setDescription(descriptionField.getText());
-        currentCounter.getItems().list = itemModel.getList();
+        currentCounter.getItems().setList(itemModel.getList());
     }
 
 

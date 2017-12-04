@@ -6,8 +6,11 @@
 package main;
 
 import controller.AuthController;
+import model.Permission;
 import model.User;
+import model.UserGroup;
 import view.Home;
+import view.Signup;
 import view.ViewBus;
 
 /**
@@ -17,7 +20,15 @@ import view.ViewBus;
 public class Test {
     
     public static void main(String[] args) {
-        //ViewBus.get().open(Login.class);
+        //ViewBus.get().open(Signup.class);
+//        UserGroup.store.Save(UserGroup.builder().name("Admin").build());
+//        UserGroup.store.Save(UserGroup.builder().name("Mod").build());
+//        UserGroup.store.Save(UserGroup.builder().name("User").build());
+
+        UserGroup ug = UserGroup.store.GetById(1);
+        ug.getPermissions().add(Permission.CategoryManagement);
+        ug.save();
+
 
         AuthController.auth(User.builder().email("d").password("123456").build());
         ViewBus.get().open(Home.class);

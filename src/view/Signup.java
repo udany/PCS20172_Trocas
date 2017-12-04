@@ -1,6 +1,8 @@
 package view;
 
+import controller.AuthController;
 import model.User;
+import model.UserGroup;
 import util.MyFrame;
 
 import javax.swing.*;
@@ -79,12 +81,14 @@ public class Signup extends MyFrame {
             return;
         }
 
-
-        User.store.Save(user);
-
-        showMessageDialog(null, "Sucesso!");
-
-        back();
+        try {
+            if (AuthController.register(user)) {
+                showMessageDialog(null, "Sucesso!");
+                back();
+            }
+        } catch (Exception e) {
+            showMessageDialog(null, e.getMessage());
+        }
     }
 
     {
@@ -180,7 +184,7 @@ public class Signup extends MyFrame {
         mainPanel.add(spacer2, gbc);
         final JPanel spacer3 = new JPanel();
         gbc = new GridBagConstraints();
-        gbc.gridx = 2;
+        gbc.gridx = 3;
         gbc.gridy = 1;
         gbc.fill = GridBagConstraints.HORIZONTAL;
         gbc.ipadx = 20;
@@ -198,27 +202,33 @@ public class Signup extends MyFrame {
         gbc.gridy = 3;
         gbc.fill = GridBagConstraints.BOTH;
         mainPanel.add(panel2, gbc);
-        backButton = new JButton();
-        backButton.setText("Voltar");
-        gbc = new GridBagConstraints();
-        gbc.gridx = 0;
-        gbc.gridy = 0;
-        gbc.fill = GridBagConstraints.HORIZONTAL;
-        panel2.add(backButton, gbc);
         final JPanel spacer5 = new JPanel();
         gbc = new GridBagConstraints();
-        gbc.gridx = 1;
+        gbc.gridx = 0;
         gbc.gridy = 0;
         gbc.weightx = 1.0;
         gbc.fill = GridBagConstraints.HORIZONTAL;
         panel2.add(spacer5, gbc);
+        backButton = new JButton();
+        backButton.setText("Voltar");
+        gbc = new GridBagConstraints();
+        gbc.gridx = 3;
+        gbc.gridy = 0;
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+        panel2.add(backButton, gbc);
         registerButton = new JButton();
         registerButton.setText("Cadastrar");
+        gbc = new GridBagConstraints();
+        gbc.gridx = 1;
+        gbc.gridy = 0;
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+        panel2.add(registerButton, gbc);
+        final JPanel spacer6 = new JPanel();
         gbc = new GridBagConstraints();
         gbc.gridx = 2;
         gbc.gridy = 0;
         gbc.fill = GridBagConstraints.HORIZONTAL;
-        panel2.add(registerButton, gbc);
+        panel2.add(spacer6, gbc);
     }
 
     /**
