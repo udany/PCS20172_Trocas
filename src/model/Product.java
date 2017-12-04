@@ -13,7 +13,7 @@ import javax.xml.bind.annotation.XmlTransient;
 @AllArgsConstructor
 public class Product extends BaseModel
 {
-    @Getter @Setter private Integer userId;
+    @Getter @Setter private int userId;
     @Getter @Setter private String name;
     @Getter @Setter private String description;
     @Getter @Setter private ProductCondition condition;
@@ -28,6 +28,6 @@ public class Product extends BaseModel
 
     @XmlTransient
     public ProductCategory getCategory(){
-        return this.userId > 0 ? ProductCategory.store.GetById(this.categoryId) : null;
+        return this.categoryId > 0 ? ProductCategory.store.GetById(this.categoryId) : null;
     }
 }

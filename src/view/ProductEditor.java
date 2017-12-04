@@ -47,7 +47,9 @@ public class ProductEditor extends MyFrameEditor<Product> {
     }
 
     protected Product create() {
-        return new Product();
+        Product p = new Product();
+        p.setUserId(AuthController.getCurrentUser().getId());
+        return p;
     }
 
     protected void save() {
