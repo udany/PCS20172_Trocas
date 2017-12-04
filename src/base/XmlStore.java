@@ -89,9 +89,12 @@ public class XmlStore<T extends BaseModel> extends BaseStore<T> {
 
         if (readData!=null && readData.getList() != null) {
             this.data = readData.getList();
+            lastRead = GetLastWrite();
+
             onChange.emit();
+        }else{
+            lastRead = GetLastWrite();
         }
-        lastRead = GetLastWrite();
     }
 
     public List<T> List(){
