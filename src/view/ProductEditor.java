@@ -1,5 +1,6 @@
 package view;
 
+import base.SyncedListModel;
 import controller.AuthController;
 import model.Product;
 import model.ProductCategory;
@@ -37,11 +38,11 @@ public class ProductEditor extends MyFrameEditor<Product> {
         });
 
         /// Fill Condition Combo
-        conditionSelect.setModel(new ArrayListComboModel(Arrays.asList(ProductCondition.values())));
+        conditionSelect.setModel(new ArrayListModel(Arrays.asList(ProductCondition.values())));
         conditionSelect.setRenderer(new StringCellRenderer<ProductCondition>(x -> x != null ? x.getLabel() : ""));
 
         /// Fill Category Combo
-        categorySelect.setModel(new ArrayListComboModel(ProductCategory.store.List()));
+        categorySelect.setModel(new SyncedListModel<>(ProductCategory.store));
         categorySelect.setRenderer(new StringCellRenderer<ProductCategory>(x -> x != null ? x.getName() : ""));
     }
 
