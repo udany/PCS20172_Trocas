@@ -1,5 +1,7 @@
 package util;
 
+import com.sun.xml.internal.bind.v2.runtime.IllegalAnnotationException;
+
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
@@ -29,9 +31,10 @@ public class XmlSerializer {
             m.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
 
             m.marshal(object, yourFile);
+        }catch (IllegalAnnotationException e){
+            System.out.println("XmlSerializer Save IllegalAnnotationException: "+e.getMessage());
         }catch (Exception e){
             System.out.println("XmlSerializer Save Error: "+e.getMessage());
-            return false;
         }
 
         return  true;

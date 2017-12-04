@@ -11,25 +11,44 @@ import java.util.stream.Collectors;
  * An XML serializable list wrapper
  * @param <T>
  */
-@XmlRootElement(name = "list")
+@XmlRootElement(name = "model-list")
 @XmlAccessorType(XmlAccessType.FIELD)
-public class ModelList<T extends BaseModel> extends SerializableList<T> {
+public class ModelList<T extends BaseModel> extends SerializableList<Integer> {
 
     private BaseStore<T> store;
 
     @XmlTransient
-    public List<T> models;
+    private List<T> models = new ArrayList<>();
 
-    private List<Integer> ids;
-
-    public List<Integer> getIds(){
-        return models.stream().map(x -> x.getId()).collect(Collectors.toList());
+    public List<T> getModels(){
+        return models;
     }
 
-    public void setIds(List<Integer> ids){
-        this.models = ids.stream().map(x -> this.store.GetById(x)).collect(Collectors.toList());
+    @Override
+    public int size(){
+        return models.size();
     }
 
+    public void add(T model){
+        models.add(model);
+    }
+
+    public void remove(T model){
+        models.remove(model);
+    }
+
+
+    @XmlElement(name = "id")
+    public List<Integer> getList() {
+        return models.stream().filter(x -> x != null).map(x -> x.getId()).collect(Collectors.toList());
+    }
+
+    public void setList(List<Integer> ids){
+        models = ids.stream().map(x -> this.store.GetById(x)).collect(Collectors.toList());
+    }
+
+
+    /// Constructors
     public ModelList(){
         this(null, null);
     }
@@ -42,9 +61,9 @@ public class ModelList<T extends BaseModel> extends SerializableList<T> {
         this.store = store;
 
         if (list != null) {
-            this.setIds(list);
+            this.setList(list);
         }else{
-            list = new ArrayList<>();
+            models = new ArrayList<>();
         }
     }
 }

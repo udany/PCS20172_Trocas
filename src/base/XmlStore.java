@@ -85,10 +85,10 @@ public class XmlStore<T extends BaseModel> extends BaseStore<T> {
         long lastWrite = GetLastWrite();
         if (lastWrite <= lastRead) return;
 
-        SerializableList<T> data = XmlSerializer.load(file, classes.toArray(new Class[classes.size()]));
+        SerializableList<T> readData = XmlSerializer.load(file, classes.toArray(new Class[classes.size()]));
 
-        if (data!=null && data.list != null) {
-            this.data = data.list;
+        if (readData!=null && readData.getList() != null) {
+            this.data = readData.getList();
             onChange.emit();
         }
         lastRead = GetLastWrite();
