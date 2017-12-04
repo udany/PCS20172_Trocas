@@ -28,6 +28,9 @@ public class ProductSelector extends MyFrame {
 
         setContentPane(mainPanel);
 
+        onSelect = new Event<>();
+
+
         onOpen.addListener(e -> {
             centerOnScreen();
             clearForm();
@@ -41,9 +44,9 @@ public class ProductSelector extends MyFrame {
 
                 productList.setSelectionMode(multiple ? ListSelectionModel.MULTIPLE_INTERVAL_SELECTION : ListSelectionModel.SINGLE_SELECTION);
             }
-        });
 
-        onSelect = new Event<>();
+            onSelect.clear();
+        });
 
 
         // List

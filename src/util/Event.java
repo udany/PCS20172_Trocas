@@ -52,4 +52,8 @@ public class Event<T extends Object> {
             listener.accept(data);
         }
     }
+
+    public void clear(){
+        this.listeners.clear();
+    }
 }

@@ -79,12 +79,12 @@ public class CounterEditor extends MyFrame {
 
         addProductButton.addActionListener(e -> {
             productSelector.open(Product.store.List(x -> x.getUserId() == AuthController.getCurrentUser().getId()));
-        });
 
-        productSelector.onSelect.addListener(list -> {
-            List<CounterItem> ciList = list.stream().map(x -> new CounterItem(x)).collect(Collectors.toList());
+            productSelector.onSelect.addListener(list -> {
+                List<CounterItem> ciList = list.stream().map(x -> new CounterItem(x)).collect(Collectors.toList());
 
-            itemModel.add(ciList);
+                itemModel.add(ciList);
+            });
         });
 
         ///// Remove
