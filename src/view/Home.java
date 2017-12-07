@@ -101,6 +101,8 @@ public class Home extends MyFrame {
         } else {
             tabbedPane.setEnabledAt(3, false);
         }
+
+        tabbedPane.setSelectedIndex(0);
     }
 
     private <E extends BaseModel> void setupCrud(

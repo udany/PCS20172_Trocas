@@ -45,6 +45,7 @@ public class Login extends MyFrame {
         onOpen.addListener(e -> {
             centerOnScreen();
             clearForm();
+            emailField.grabFocus();
         });
     }
 
