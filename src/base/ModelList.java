@@ -14,13 +14,16 @@ import java.util.stream.Collectors;
 @XmlRootElement(name = "model-list")
 @XmlAccessorType(XmlAccessType.FIELD)
 public class ModelList<T extends BaseModel> extends SerializableList<Integer> {
-
+    @XmlTransient
     private BaseStore<T> store;
 
     @XmlTransient
-    private List<T> models = new ArrayList<>();
+    private List<T> models;
 
     public List<T> getModels(){
+        if (models == null){
+            setList(getList());
+        }
         return models;
     }
 
@@ -30,23 +33,35 @@ public class ModelList<T extends BaseModel> extends SerializableList<Integer> {
     }
 
     public void add(T model){
-        models.add(model);
+        getModels().add(model);
+        updateList();
     }
 
     public void remove(T model){
-        models.remove(model);
+        getModels().remove(model);
+        updateList();
     }
 
 
     @XmlElement(name = "id")
     private List<Integer> list;
+    private void updateList(){
+        if (models != null){
+            list = getModels().stream().filter(x -> x != null).map(x -> x.getId()).collect(Collectors.toList());
+        }else{
+            list = new ArrayList<>();
+        }
+    }
 
     public List<Integer> getList() {
-        if (list != null) return  list;
-        return getModels().stream().filter(x -> x != null).map(x -> x.getId()).collect(Collectors.toList());
+        if (list == null) updateList();
+        return list;
     }
     public void setList(List<Integer> ids){
-        models = ids.stream().map(x -> this.store.GetById(x)).collect(Collectors.toList());
+        if (ids!=null){
+            list = ids;
+            models = ids.stream().map(x -> this.store.GetById(x)).collect(Collectors.toList());
+        }
     }
 
 
