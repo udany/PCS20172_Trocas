@@ -34,10 +34,15 @@ public class Home extends MyFrame {
     private JButton newCategoryButton;
     private JButton editCategoryButton;
 
+    private JPanel usersPane;
+    private JList<User> userList;
+    private JButton editUserButton;
+
 
     private SyncedListModel<Counter> countersModel = new SyncedListModel<>(null, null);
     private SyncedListModel<Product> productsModel = new SyncedListModel<>(null, null);
     private SyncedListModel<ProductCategory> categoriesModel = new SyncedListModel<>(null, null);
+    private SyncedListModel<User> usersModel = new SyncedListModel<>(null, null);
 
     public Home() {
         super();
@@ -56,6 +61,9 @@ public class Home extends MyFrame {
 
         ////// Categories
         categorySteup();
+
+        ////// Users
+        userSetup();
 
         ////// On Open
         onOpen.addListener(e -> {
@@ -77,12 +85,20 @@ public class Home extends MyFrame {
         /// List
         productsModel.setQuery(x -> x.getUserId() == current.getId());
 
-        ////// Category
-        /// Verify Permission
+
+        ///// Verify Permission
+        /// Categories
         if (current.hasPermission(Permission.CategoryManagement)) {
             tabbedPane.setEnabledAt(2, true);
         } else {
             tabbedPane.setEnabledAt(2, false);
+        }
+
+        /// Users
+        if (current.hasPermission(Permission.UserManagement)) {
+            tabbedPane.setEnabledAt(3, true);
+        } else {
+            tabbedPane.setEnabledAt(3, false);
         }
     }
 
@@ -116,9 +132,11 @@ public class Home extends MyFrame {
         list.setCellRenderer(renderer);
 
         /// New
-        newButton.addActionListener(e -> {
-            ViewBus.get().open(editorView);
-        });
+        if (newButton != null) {
+            newButton.addActionListener(e -> {
+                ViewBus.get().open(editorView);
+            });
+        }
 
         /// Edit
         editButton.addActionListener(e -> {
@@ -160,6 +178,18 @@ public class Home extends MyFrame {
                 newCategoryButton,
                 editCategoryButton,
                 CategoryEditor.class);
+    }
+
+    private void userSetup() {
+        setupCrud(
+                usersModel,
+                User.store,
+                new StringCellRenderer<User>(x -> x.getId() + " - " + x.getName()),
+
+                userList,
+                null,
+                editUserButton,
+                UserEditor.class);
     }
 
     private void createMenu() {
@@ -361,6 +391,41 @@ public class Home extends MyFrame {
         gbc.gridy = 0;
         gbc.fill = GridBagConstraints.HORIZONTAL;
         panel3.add(newCategoryButton, gbc);
+        usersPane = new JPanel();
+        usersPane.setLayout(new GridBagLayout());
+        tabbedPane.addTab("Usuários", usersPane);
+        final JScrollPane scrollPane4 = new JScrollPane();
+        gbc = new GridBagConstraints();
+        gbc.gridx = 0;
+        gbc.gridy = 0;
+        gbc.weightx = 1.0;
+        gbc.weighty = 1.0;
+        gbc.fill = GridBagConstraints.BOTH;
+        usersPane.add(scrollPane4, gbc);
+        userList = new JList();
+        scrollPane4.setViewportView(userList);
+        final JPanel panel4 = new JPanel();
+        panel4.setLayout(new GridBagLayout());
+        gbc = new GridBagConstraints();
+        gbc.gridx = 0;
+        gbc.gridy = 1;
+        gbc.fill = GridBagConstraints.BOTH;
+        usersPane.add(panel4, gbc);
+        editUserButton = new JButton();
+        editUserButton.setEnabled(false);
+        editUserButton.setText("Editar");
+        gbc = new GridBagConstraints();
+        gbc.gridx = 1;
+        gbc.gridy = 0;
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+        panel4.add(editUserButton, gbc);
+        final JPanel spacer7 = new JPanel();
+        gbc = new GridBagConstraints();
+        gbc.gridx = 0;
+        gbc.gridy = 0;
+        gbc.weightx = 1.0;
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+        panel4.add(spacer7, gbc);
     }
 
     /**

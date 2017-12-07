@@ -3,7 +3,8 @@ package model.enums;
 import lombok.Getter;
 
 public enum Permission {
-    CategoryManagement("Gerenciar Categorias");
+    CategoryManagement("Gerenciar Categorias"),
+    UserManagement("Gerenciar Usuários");
 
     @Getter private String label;
     Permission(String l){
