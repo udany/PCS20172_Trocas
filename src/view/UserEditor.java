@@ -1,6 +1,8 @@
 package view;
 
+import controller.AuthController;
 import model.*;
+import model.enums.Permission;
 import util.ArrayListModel;
 import util.MyFrameEditor;
 import util.StringCellRenderer;
@@ -105,6 +107,16 @@ public class UserEditor extends MyFrameEditor<User> {
         groups = new ArrayList<>(current.getGroups().getList());
         groupModel.setList(UserGroup.store.List());
         groupList.clearSelection();
+
+        if (AuthController.getCurrentUser().hasPermission(Permission.UserManagement)) {
+            addGroupButton.setEnabled(true);
+            removeGroupButton.setEnabled(true);
+            groupList.setEnabled(true);
+        } else {
+            addGroupButton.setEnabled(false);
+            removeGroupButton.setEnabled(false);
+            groupList.setEnabled(false);
+        }
     }
 
     protected void readForm() {
@@ -203,7 +215,8 @@ public class UserEditor extends MyFrameEditor<User> {
         gbc = new GridBagConstraints();
         gbc.gridx = 0;
         gbc.gridy = 3;
-        gbc.anchor = GridBagConstraints.WEST;
+        gbc.anchor = GridBagConstraints.NORTHWEST;
+        gbc.ipady = 5;
         panel1.add(label4, gbc);
         final JScrollPane scrollPane1 = new JScrollPane();
         gbc = new GridBagConstraints();

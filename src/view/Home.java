@@ -6,6 +6,7 @@ import base.SyncedListModel;
 import controller.AuthController;
 import model.*;
 import model.enums.Permission;
+import sun.java2d.cmm.Profile;
 import util.ListDoubleClickAdapter;
 import util.StringCellRenderer;
 import util.MyFrame;
@@ -201,6 +202,13 @@ public class Home extends MyFrame {
         JMenu fileMenu = new JMenu("Arquivo");
 
         //create menu items
+        JMenuItem profileMenuItem = new JMenuItem(new AbstractAction("Editar meu perfil") {
+            public void actionPerformed(ActionEvent ae) {
+                ViewBus.get().open(UserEditor.class, AuthController.getCurrentUser());
+            }
+        });
+        fileMenu.add(profileMenuItem);
+
         JMenuItem exitMenuItem = new JMenuItem(new AbstractAction("Sair") {
             public void actionPerformed(ActionEvent ae) {
                 ref.close();
@@ -208,8 +216,6 @@ public class Home extends MyFrame {
                 ViewBus.get().open(Login.class);
             }
         });
-
-        //add menu items to menus
         fileMenu.add(exitMenuItem);
 
         //add menu to menubar
