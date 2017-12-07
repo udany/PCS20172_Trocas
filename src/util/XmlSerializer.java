@@ -1,11 +1,13 @@
 package util;
 
 import com.sun.xml.internal.bind.v2.runtime.IllegalAnnotationException;
+import com.sun.xml.internal.bind.v2.runtime.IllegalAnnotationsException;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
 import java.io.*;
+import java.util.stream.Collectors;
 
 public class XmlSerializer {
 
@@ -31,8 +33,8 @@ public class XmlSerializer {
             m.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
 
             m.marshal(object, yourFile);
-        }catch (IllegalAnnotationException e){
-            System.out.println("XmlSerializer Save IllegalAnnotationException: "+e.getMessage());
+        }catch (IllegalAnnotationsException e){
+            System.out.println("XmlSerializer Load Error: "+e.getErrors().stream().map(x -> x.getMessage()).collect(Collectors.toList()));
         }catch (Exception e){
             System.out.println("XmlSerializer Save Error: "+e.getMessage());
         }
@@ -53,7 +55,13 @@ public class XmlSerializer {
             JAXBContext context = JAXBContext.newInstance(classes);
             Unmarshaller unmarshaller = context.createUnmarshaller();
             File xml = new File(file);
-            obj = (T) unmarshaller.unmarshal(xml);
+
+            if (xml.exists()){
+                obj = (T) unmarshaller.unmarshal(xml);
+            }
+        }catch (IllegalAnnotationsException e){
+            System.out.println("XmlSerializer Load Error: "+e.getErrors().stream().map(x -> x.getMessage()).collect(Collectors.toList()));
+            return null;
         }catch (Exception e){
             System.out.println("XmlSerializer Load Error: "+e.getMessage());
             return null;
