@@ -115,10 +115,18 @@ public class XmlStore<T extends BaseModel> extends BaseStore<T> {
     }
 
     private long GetLastWrite(){
+
         File store = new File(file);
         if (!store.exists()){
             try {
+                String path = store.getParent();
+                if (!path.equals("")){
+                    File dir = new File(path);
+                    dir.mkdirs();
+                }
+
                 store.createNewFile();
+                SaveAll(data);
             }catch (Exception e){
                 System.out.println("Error: "+e.getMessage());
                 return 0;
