@@ -24,10 +24,14 @@ public class CounterEditor extends MyFrame {
     private JButton removeProductButton;
     private JButton addProductButton;
     private JList productList;
+    private JButton editAddressButton;
+    private JTextArea addressField;
 
     private Counter currentCounter;
     private ProductSelector productSelector;
     private ArrayListModel<CounterItem> itemModel;
+
+    private AddressEditor addressEditor;
 
     public CounterEditor() {
         super();
@@ -93,6 +97,18 @@ public class CounterEditor extends MyFrame {
 
             itemModel.remove(list);
         });
+
+
+        /// Edit Address
+        addressEditor = (AddressEditor) ViewBus.get().get(AddressEditor.class);
+        editAddressButton.addActionListener(e -> {
+            addressEditor.open(currentCounter.getAddress());
+
+            addressEditor.onConfirm.addListener(address -> {
+                currentCounter.setAddress(address);
+                addressField.setText(currentCounter.getAddress().toString());
+            });
+        });
     }
 
     private void fillForm() {
@@ -100,6 +116,7 @@ public class CounterEditor extends MyFrame {
         descriptionField.setText(currentCounter.getDescription());
         itemModel.setList(currentCounter.getItems().getList());
         productList.clearSelection();
+        addressField.setText(currentCounter.getAddress().toString());
     }
 
     private void readForm() {
@@ -161,7 +178,7 @@ public class CounterEditor extends MyFrame {
         label2.setText("Descrição");
         gbc = new GridBagConstraints();
         gbc.gridx = 0;
-        gbc.gridy = 1;
+        gbc.gridy = 3;
         gbc.anchor = GridBagConstraints.NORTHWEST;
         panel1.add(label2, gbc);
         descriptionField = new JTextArea();
@@ -169,7 +186,7 @@ public class CounterEditor extends MyFrame {
         descriptionField.setWrapStyleWord(true);
         gbc = new GridBagConstraints();
         gbc.gridx = 2;
-        gbc.gridy = 1;
+        gbc.gridy = 3;
         gbc.weighty = 1.0;
         gbc.fill = GridBagConstraints.BOTH;
         panel1.add(descriptionField, gbc);
@@ -177,13 +194,13 @@ public class CounterEditor extends MyFrame {
         label3.setText("Produtos");
         gbc = new GridBagConstraints();
         gbc.gridx = 0;
-        gbc.gridy = 2;
+        gbc.gridy = 4;
         gbc.anchor = GridBagConstraints.NORTHWEST;
         panel1.add(label3, gbc);
         final JScrollPane scrollPane1 = new JScrollPane();
         gbc = new GridBagConstraints();
         gbc.gridx = 2;
-        gbc.gridy = 2;
+        gbc.gridy = 4;
         gbc.weighty = 1.0;
         gbc.fill = GridBagConstraints.BOTH;
         panel1.add(scrollPane1, gbc);
@@ -193,7 +210,7 @@ public class CounterEditor extends MyFrame {
         panel2.setLayout(new GridBagLayout());
         gbc = new GridBagConstraints();
         gbc.gridx = 2;
-        gbc.gridy = 3;
+        gbc.gridy = 5;
         gbc.fill = GridBagConstraints.BOTH;
         panel1.add(panel2, gbc);
         removeProductButton = new JButton();
@@ -223,74 +240,109 @@ public class CounterEditor extends MyFrame {
         gbc.weightx = 1.0;
         gbc.fill = GridBagConstraints.HORIZONTAL;
         panel2.add(spacer3, gbc);
+        final JLabel label4 = new JLabel();
+        label4.setText("Endereço");
+        gbc = new GridBagConstraints();
+        gbc.gridx = 0;
+        gbc.gridy = 1;
+        gbc.anchor = GridBagConstraints.WEST;
+        panel1.add(label4, gbc);
+        final JPanel panel3 = new JPanel();
+        panel3.setLayout(new GridBagLayout());
+        gbc = new GridBagConstraints();
+        gbc.gridx = 2;
+        gbc.gridy = 2;
+        gbc.fill = GridBagConstraints.BOTH;
+        panel1.add(panel3, gbc);
+        editAddressButton = new JButton();
+        editAddressButton.setText("Editar Endereço");
+        gbc = new GridBagConstraints();
+        gbc.gridx = 1;
+        gbc.gridy = 0;
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+        panel3.add(editAddressButton, gbc);
         final JPanel spacer4 = new JPanel();
+        gbc = new GridBagConstraints();
+        gbc.gridx = 0;
+        gbc.gridy = 0;
+        gbc.weightx = 1.0;
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+        panel3.add(spacer4, gbc);
+        addressField = new JTextArea();
+        addressField.setEditable(false);
+        gbc = new GridBagConstraints();
+        gbc.gridx = 2;
+        gbc.gridy = 1;
+        gbc.fill = GridBagConstraints.BOTH;
+        panel1.add(addressField, gbc);
+        final JPanel spacer5 = new JPanel();
         gbc = new GridBagConstraints();
         gbc.gridx = 1;
         gbc.gridy = 2;
         gbc.fill = GridBagConstraints.VERTICAL;
-        mainPanel.add(spacer4, gbc);
-        final JPanel spacer5 = new JPanel();
-        gbc = new GridBagConstraints();
-        gbc.gridx = 0;
-        gbc.gridy = 1;
-        gbc.fill = GridBagConstraints.HORIZONTAL;
-        gbc.ipadx = 20;
         mainPanel.add(spacer5, gbc);
         final JPanel spacer6 = new JPanel();
         gbc = new GridBagConstraints();
-        gbc.gridx = 2;
+        gbc.gridx = 0;
         gbc.gridy = 1;
         gbc.fill = GridBagConstraints.HORIZONTAL;
         gbc.ipadx = 20;
         mainPanel.add(spacer6, gbc);
         final JPanel spacer7 = new JPanel();
         gbc = new GridBagConstraints();
+        gbc.gridx = 2;
+        gbc.gridy = 1;
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+        gbc.ipadx = 20;
+        mainPanel.add(spacer7, gbc);
+        final JPanel spacer8 = new JPanel();
+        gbc = new GridBagConstraints();
         gbc.gridx = 1;
         gbc.gridy = 0;
         gbc.fill = GridBagConstraints.VERTICAL;
         gbc.ipady = 20;
-        mainPanel.add(spacer7, gbc);
-        final JPanel panel3 = new JPanel();
-        panel3.setLayout(new GridBagLayout());
+        mainPanel.add(spacer8, gbc);
+        final JPanel panel4 = new JPanel();
+        panel4.setLayout(new GridBagLayout());
         gbc = new GridBagConstraints();
         gbc.gridx = 1;
         gbc.gridy = 3;
         gbc.fill = GridBagConstraints.BOTH;
-        mainPanel.add(panel3, gbc);
+        mainPanel.add(panel4, gbc);
         saveButton = new JButton();
         saveButton.setText("Salvar");
         gbc = new GridBagConstraints();
         gbc.gridx = 1;
         gbc.gridy = 0;
         gbc.fill = GridBagConstraints.HORIZONTAL;
-        panel3.add(saveButton, gbc);
-        final JPanel spacer8 = new JPanel();
+        panel4.add(saveButton, gbc);
+        final JPanel spacer9 = new JPanel();
         gbc = new GridBagConstraints();
         gbc.gridx = 2;
         gbc.gridy = 0;
         gbc.fill = GridBagConstraints.HORIZONTAL;
-        panel3.add(spacer8, gbc);
+        panel4.add(spacer9, gbc);
         cancelButton = new JButton();
         cancelButton.setText("Cancelar");
         gbc = new GridBagConstraints();
         gbc.gridx = 3;
         gbc.gridy = 0;
         gbc.fill = GridBagConstraints.HORIZONTAL;
-        panel3.add(cancelButton, gbc);
-        final JPanel spacer9 = new JPanel();
+        panel4.add(cancelButton, gbc);
+        final JPanel spacer10 = new JPanel();
         gbc = new GridBagConstraints();
         gbc.gridx = 0;
         gbc.gridy = 0;
         gbc.weightx = 1.0;
         gbc.fill = GridBagConstraints.HORIZONTAL;
-        panel3.add(spacer9, gbc);
-        final JPanel spacer10 = new JPanel();
+        panel4.add(spacer10, gbc);
+        final JPanel spacer11 = new JPanel();
         gbc = new GridBagConstraints();
         gbc.gridx = 1;
         gbc.gridy = 4;
         gbc.fill = GridBagConstraints.VERTICAL;
         gbc.ipady = 20;
-        mainPanel.add(spacer10, gbc);
+        mainPanel.add(spacer11, gbc);
     }
 
     /**

@@ -22,8 +22,9 @@ public class Counter extends BaseModel {
     @Getter @Setter private String name;
     @Getter @Setter private String description;
     @Getter @Setter private SerializableList<CounterItem> items = new SerializableList<>();
+    @Getter @Setter private Address address = new Address();
 
-    public static XmlStore<Counter> store = new XmlStore<Counter>("store/counter.xml", Counter.class, CounterItem.class);
+    public static XmlStore<Counter> store = new XmlStore<Counter>("store/counter.xml", Counter.class, CounterItem.class, Address.class);
 
     @XmlTransient
     public User getUser(){
