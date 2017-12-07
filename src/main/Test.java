@@ -7,7 +7,6 @@ package main;
 
 import controller.AuthController;
 import model.User;
-import model.UserGroup;
 import view.Home;
 import view.ViewBus;
 
