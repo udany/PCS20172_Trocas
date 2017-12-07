@@ -171,7 +171,7 @@ public class Home extends MyFrame {
             }).collect(Collectors.toList()));
         }
 
-        ViewBus.get().open(ProductSelector.class, results);
+        ViewBus.get().open(SearchResults.class, results);
     }
 
     private List<Component> tabs;
