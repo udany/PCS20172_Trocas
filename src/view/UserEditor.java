@@ -107,6 +107,7 @@ public class UserEditor extends MyFrameEditor<User> {
         groups = new ArrayList<>(current.getGroups().getList());
         groupModel.setList(UserGroup.store.List());
         groupList.clearSelection();
+        mainPanel.grabFocus();
 
         if (AuthController.getCurrentUser().hasPermission(Permission.UserManagement)) {
             addGroupButton.setEnabled(true);

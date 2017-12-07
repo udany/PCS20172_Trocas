@@ -20,9 +20,41 @@ public class Address extends BaseModel {
     @Getter @Setter private String phone = "";
 
     public String toString(){
-        return street+", "+number+(complement == null || complement.equals("") ? "" : " "+complement) + "\n" +
-                neighborhood + "\n" +
-                (state == null ? "" : state.getAcronym()) + " - " + city + "\n" +
-                phone;
+        StringBuilder sb = new StringBuilder();
+
+        if (!street.equals("")){
+            sb.append(street);
+        }
+        if (!street.equals("")){
+            if (sb.length() > 0) sb.append(", ");
+            sb.append(number);
+        }
+
+        if (!complement.equals("")){
+            if (sb.length() > 0) sb.append(" ");
+            sb.append(complement);
+        }
+
+        if (!neighborhood.equals("")){
+            if (sb.length() > 0) sb.append("\n");
+            sb.append(neighborhood);
+        }
+
+        if (state!=null){
+            if (sb.length() > 0) sb.append("\n");
+            sb.append(state.getAcronym());
+        }
+
+        if (!city.equals("")){
+            if (sb.length() > 0) sb.append(" - ");
+            sb.append(city);
+        }
+
+        if (!phone.equals("")){
+            if (sb.length() > 0) sb.append("\n");
+            sb.append(phone);
+        }
+
+        return sb.toString();
     }
 }

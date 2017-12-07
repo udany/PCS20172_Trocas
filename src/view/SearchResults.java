@@ -1,6 +1,7 @@
 package view;
 
 import model.Address;
+import model.Counter;
 import model.CounterItem;
 import model.Product;
 import model.enums.State;
@@ -14,6 +15,7 @@ import java.awt.*;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class SearchResults extends MyFrame {
     private JPanel mainPanel;
@@ -24,6 +26,7 @@ public class SearchResults extends MyFrame {
     private JTextField conditionField;
     private JButton exchangeButton;
     private JTextField ownerField;
+    private JTextArea addressField;
 
 
     private ArrayListModel<Product> productModel;
@@ -31,7 +34,7 @@ public class SearchResults extends MyFrame {
     public SearchResults() {
         super();
 
-        setTitle("Editando Endereço");
+        setTitle("Resultados da busca");
         setSize(750, 450);
 
         setContentPane(mainPanel);
@@ -44,6 +47,8 @@ public class SearchResults extends MyFrame {
             }
 
             clearDetails();
+            productList.clearSelection();
+            mainPanel.grabFocus();
         });
 
 
@@ -51,7 +56,8 @@ public class SearchResults extends MyFrame {
         productList.setModel(productModel);
 
         productList.addListSelectionListener(e -> {
-            fillDetails(productList.getSelectedValue());
+            Product p = productList.getSelectedValue();
+            if (p != null) fillDetails(p);
         });
 
         productList.setCellRenderer(new StringCellRenderer<Product>(x -> x.getName()));
@@ -67,6 +73,21 @@ public class SearchResults extends MyFrame {
         conditionField.setText(product.getCondition().getLabel());
         categoryField.setText(product.getCategory().getName());
         ownerField.setText(product.getUser().getName());
+
+        List<Counter> counters = Counter.store.List(x ->
+                x.getItems()
+                        .getList()
+                        .stream()
+                        .filter(counterItem -> {
+                            return counterItem.getProductId() == product.getId();
+                        })
+                        .collect(Collectors.toList())
+                        .size() > 0
+        );
+
+        List<String> addressses = counters.stream().map(x -> x.getAddress().toString()).collect(Collectors.toList());
+
+        addressField.setText(String.join("\n\n", addressses));
     }
 
     private void clearDetails() {
@@ -75,6 +96,7 @@ public class SearchResults extends MyFrame {
         conditionField.setText("");
         categoryField.setText("");
         ownerField.setText("");
+        addressField.setText("");
     }
 
     {
@@ -109,6 +131,7 @@ public class SearchResults extends MyFrame {
         gbc.weightx = 1.0;
         gbc.weighty = 1.0;
         gbc.fill = GridBagConstraints.BOTH;
+        gbc.ipadx = 250;
         mainPanel.add(panel1, gbc);
         final JLabel label1 = new JLabel();
         label1.setText("Nome");
@@ -140,15 +163,6 @@ public class SearchResults extends MyFrame {
         gbc.anchor = GridBagConstraints.NORTHWEST;
         gbc.ipadx = 5;
         panel1.add(label2, gbc);
-        descriptionField = new JTextArea();
-        descriptionField.setEditable(false);
-        descriptionField.setLineWrap(true);
-        gbc = new GridBagConstraints();
-        gbc.gridx = 2;
-        gbc.gridy = 1;
-        gbc.weighty = 1.0;
-        gbc.fill = GridBagConstraints.BOTH;
-        panel1.add(descriptionField, gbc);
         final JLabel label3 = new JLabel();
         label3.setText("Categoria");
         gbc = new GridBagConstraints();
@@ -183,7 +197,7 @@ public class SearchResults extends MyFrame {
         panel2.setLayout(new GridBagLayout());
         gbc = new GridBagConstraints();
         gbc.gridx = 2;
-        gbc.gridy = 5;
+        gbc.gridy = 6;
         gbc.fill = GridBagConstraints.BOTH;
         panel1.add(panel2, gbc);
         exchangeButton = new JButton();
@@ -215,6 +229,36 @@ public class SearchResults extends MyFrame {
         gbc.anchor = GridBagConstraints.WEST;
         gbc.fill = GridBagConstraints.HORIZONTAL;
         panel1.add(ownerField, gbc);
+        final JLabel label6 = new JLabel();
+        label6.setText("Endereço");
+        gbc = new GridBagConstraints();
+        gbc.gridx = 0;
+        gbc.gridy = 5;
+        gbc.anchor = GridBagConstraints.WEST;
+        panel1.add(label6, gbc);
+        final JScrollPane scrollPane1 = new JScrollPane();
+        gbc = new GridBagConstraints();
+        gbc.gridx = 2;
+        gbc.gridy = 1;
+        gbc.weighty = 1.0;
+        gbc.fill = GridBagConstraints.BOTH;
+        panel1.add(scrollPane1, gbc);
+        descriptionField = new JTextArea();
+        descriptionField.setEditable(false);
+        descriptionField.setLineWrap(true);
+        descriptionField.setWrapStyleWord(false);
+        scrollPane1.setViewportView(descriptionField);
+        final JScrollPane scrollPane2 = new JScrollPane();
+        gbc = new GridBagConstraints();
+        gbc.gridx = 2;
+        gbc.gridy = 5;
+        gbc.weighty = 1.0;
+        gbc.fill = GridBagConstraints.BOTH;
+        panel1.add(scrollPane2, gbc);
+        addressField = new JTextArea();
+        addressField.setEditable(false);
+        addressField.setLineWrap(true);
+        scrollPane2.setViewportView(addressField);
         final JPanel spacer4 = new JPanel();
         gbc = new GridBagConstraints();
         gbc.gridx = 0;
@@ -243,17 +287,16 @@ public class SearchResults extends MyFrame {
         gbc.fill = GridBagConstraints.VERTICAL;
         gbc.ipady = 20;
         mainPanel.add(spacer7, gbc);
-        final JScrollPane scrollPane1 = new JScrollPane();
+        final JScrollPane scrollPane3 = new JScrollPane();
         gbc = new GridBagConstraints();
         gbc.gridx = 1;
         gbc.gridy = 1;
-        gbc.weightx = 1.0;
         gbc.weighty = 1.0;
         gbc.fill = GridBagConstraints.BOTH;
-        gbc.ipadx = 200;
-        mainPanel.add(scrollPane1, gbc);
+        gbc.ipadx = 250;
+        mainPanel.add(scrollPane3, gbc);
         productList = new JList();
-        scrollPane1.setViewportView(productList);
+        scrollPane3.setViewportView(productList);
     }
 
     /**
