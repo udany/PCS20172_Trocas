@@ -1,9 +1,8 @@
 package view;
 
-import model.Address;
-import model.Counter;
-import model.CounterItem;
-import model.Product;
+import base.ModelList;
+import controller.AuthController;
+import model.*;
 import model.enums.State;
 import util.ArrayListModel;
 import util.Event;
@@ -13,7 +12,7 @@ import util.StringCellRenderer;
 import javax.swing.*;
 import java.awt.*;
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -54,6 +53,7 @@ public class SearchResults extends MyFrame {
 
         productModel = new ArrayListModel<>(new ArrayList<>());
         productList.setModel(productModel);
+        productList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 
         productList.addListSelectionListener(e -> {
             Product p = productList.getSelectedValue();
@@ -61,6 +61,13 @@ public class SearchResults extends MyFrame {
         });
 
         productList.setCellRenderer(new StringCellRenderer<Product>(x -> x.getName()));
+
+        exchangeButton.addActionListener(e -> {
+            Product p = productList.getSelectedValue();
+            if (p != null) {
+                createExchange(p);
+            }
+        });
     }
 
     private void fill(List<Product> list) {
@@ -97,6 +104,18 @@ public class SearchResults extends MyFrame {
         categoryField.setText("");
         ownerField.setText("");
         addressField.setText("");
+    }
+
+    private void createExchange(Product product) {
+        Exchange exchange = Exchange.builder()
+                .user1Id(product.getUserId())
+                .user2Id(AuthController.getCurrentUser().getId())
+                .dateStarted(new Date())
+                .user1Products(new ModelList<>())
+                .user2Products(new ModelList<>())
+                .build();
+
+        ViewBus.get().open(ExchangeView.class, exchange);
     }
 
     {

@@ -20,10 +20,14 @@ public abstract class MyFrameEditor<T extends BaseModel> extends MyFrame {
         onOpen.addListener(e -> {
             if (e.data.length > 0 && e.data[0] != null) {
                 current = (T) e.data[0];
-                setTitle("Editando "+getModelName());
             } else {
                 current = create();
+            }
+
+            if (current.getId() == 0){
                 setTitle("Criando "+getModelName());
+            }else{
+                setTitle("Editando "+getModelName());
             }
 
             fillForm();
