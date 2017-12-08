@@ -136,6 +136,8 @@ public class ExchangeView extends MyFrameEditor<Exchange> {
         }
 
         Exchange.store.Save(current);
+
+        fillForm();
     }
 
     @Override
@@ -208,9 +210,12 @@ public class ExchangeView extends MyFrameEditor<Exchange> {
 
         if (current.isCanceled()) {
             setTitle("TROCA CANCELADA");
-        }
-        if (current.isUser1Concluded() && current.isUser2Concluded()) {
+        } else if (current.isUser1Concluded() && current.isUser2Concluded()) {
             setTitle("Troca Finalizada com Sucesso");
+        } else if (current.isUser1Accepted() && current.isUser1Accepted()) {
+            setTitle("Troca Aceita");
+        } else if (current.getId() != 0) {
+            setTitle("Troca em progresso");
         }
     }
 
@@ -268,7 +273,6 @@ public class ExchangeView extends MyFrameEditor<Exchange> {
         notifyOtherUser("Troca " + current.getId() + " aceita por " + currentUser.getName() + ".");
 
         save();
-        fillForm();
     }
 
     private void conclude(int index) {
@@ -282,7 +286,6 @@ public class ExchangeView extends MyFrameEditor<Exchange> {
         notifyOtherUser("Troca " + current.getId() + " concluída por " + currentUser.getName() + ".");
 
         save();
-        fillForm();
     }
 
     private void modify() {
@@ -296,7 +299,6 @@ public class ExchangeView extends MyFrameEditor<Exchange> {
         notifyOtherUser("Troca " + current.getId() + " com " + currentUser.getName() + " modificada.");
 
         save();
-        fillForm();
     }
 
     private void cancel() {
@@ -307,7 +309,6 @@ public class ExchangeView extends MyFrameEditor<Exchange> {
         current.setCanceled(true);
 
         save();
-        fillForm();
 
         User currentUser = AuthController.getCurrentUser();
         notifyOtherUser("Troca " + current.getId() + " cancelada por " + currentUser.getName() + ".");

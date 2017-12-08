@@ -4,10 +4,8 @@ import base.ModelList;
 import controller.AuthController;
 import model.*;
 import model.enums.State;
-import util.ArrayListModel;
+import util.*;
 import util.Event;
-import util.MyFrame;
-import util.StringCellRenderer;
 
 import javax.swing.*;
 import java.awt.*;
@@ -47,8 +45,6 @@ public class SearchResults extends MyFrame {
             }
 
             clearDetails();
-            productList.clearSelection();
-            mainPanel.grabFocus();
         });
 
 
@@ -58,8 +54,18 @@ public class SearchResults extends MyFrame {
 
         productList.addListSelectionListener(e -> {
             Product p = productList.getSelectedValue();
-            if (p != null) fillDetails(p);
+            if (p != null) {
+                fillDetails(p);
+                exchangeButton.setEnabled(true);
+            }
         });
+
+
+        productList.addMouseListener(new ListDoubleClickAdapter<Product>(x -> {
+            if (x != null) {
+                createExchange(x);
+            }
+        }));
 
         productList.setCellRenderer(new StringCellRenderer<Product>(x -> x.getName()));
 
@@ -73,6 +79,11 @@ public class SearchResults extends MyFrame {
 
     private void fill(List<Product> list) {
         productModel.setList(list);
+
+        productList.clearSelection();
+        mainPanel.grabFocus();
+
+        exchangeButton.setEnabled(false);
     }
 
     private void fillDetails(Product product) {
