@@ -130,6 +130,8 @@ public class ExchangeView extends MyFrameEditor<Exchange> {
 
     @Override
     protected void save() {
+        readForm();
+
         if (current.getId() == 0) {
             User currentUser = AuthController.getCurrentUser();
             notifyOtherUser("Nova troca proposta por " + currentUser.getName() + ".");
@@ -258,8 +260,10 @@ public class ExchangeView extends MyFrameEditor<Exchange> {
     }
 
     private void accept(int index) {
-        boolean confirm = showConfirm("Isso irá salvar quaisquer alterações, prosseguir?");
-        if (!confirm) return;
+        if (canEdit()) {
+            boolean confirm = showConfirm("Isso irá salvar quaisquer alterações, prosseguir?");
+            if (!confirm) return;
+        }
 
         readForm();
 
