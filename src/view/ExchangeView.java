@@ -51,14 +51,13 @@ public class ExchangeView extends MyFrameEditor<Exchange> {
         setSize(600, 450);
         setContentPane(mainPanel);
 
-        cancelButton.addActionListener(e -> {
-            close();
-        });
-
         productSelector = (ProductSelector) ViewBus.get().get(ProductSelector.class);
 
-        setupSide(productModel1, productList1, addProductButton1, removeProductButton1, acceptButton1, 1);
-        setupSide(productModel2, productList2, addProductButton2, removeProductButton2, acceptButton2, 2);
+        setupSide(productModel1, productList1, addProductButton1, removeProductButton1, acceptButton1, concludeButton1, 1);
+        setupSide(productModel2, productList2, addProductButton2, removeProductButton2, acceptButton2, concludeButton2, 2);
+
+        modifyButton.addActionListener(e -> modify());
+        cancelButton.addActionListener(e -> cancel());
     }
 
     private void setupSide(
@@ -67,6 +66,7 @@ public class ExchangeView extends MyFrameEditor<Exchange> {
             JButton addProductButton,
             JButton removeProductButton,
             JButton acceptButton,
+            JButton concludeButton,
             int index) {
 
         productList.setModel(productModel);
@@ -102,6 +102,12 @@ public class ExchangeView extends MyFrameEditor<Exchange> {
         //// Accept
         acceptButton.addActionListener(e -> {
             accept(index);
+        });
+
+
+        //// Conclude
+        concludeButton.addActionListener(e -> {
+            conclude(index);
         });
     }
 
@@ -149,7 +155,7 @@ public class ExchangeView extends MyFrameEditor<Exchange> {
             addProductButton2.setEnabled(false);
 
             saveButton.setEnabled(false);
-            modifyButton.setEnabled(!canConclude());
+            modifyButton.setEnabled(!canConclude() && !current.isCanceled());
         } else {
             productList1.setEnabled(true);
             addProductButton1.setEnabled(true);
@@ -163,13 +169,13 @@ public class ExchangeView extends MyFrameEditor<Exchange> {
 
 
         /// Accept
-        if (isUser(1) && !current.isUser1Accepted()) {
+        if (isUser(1) && !current.isUser1Accepted() && !current.isCanceled()) {
             acceptButton1.setEnabled(true);
         } else {
             acceptButton1.setEnabled(false);
         }
 
-        if (isUser(2) && !current.isUser2Accepted()) {
+        if (isUser(2) && !current.isUser2Accepted() && !current.isCanceled()) {
             acceptButton2.setEnabled(true);
         } else {
             acceptButton2.setEnabled(false);
@@ -188,6 +194,15 @@ public class ExchangeView extends MyFrameEditor<Exchange> {
         } else {
             concludeButton2.setEnabled(false);
         }
+
+        cancelButton.setEnabled(canCancel());
+
+        if (current.isCanceled()) {
+            setTitle("TROCA CANCELADA");
+        }
+        if (current.isUser1Concluded() && current.isUser2Concluded()) {
+            setTitle("Troca Finalizada com Sucesso");
+        }
     }
 
     private boolean isUser(int index) {
@@ -205,7 +220,11 @@ public class ExchangeView extends MyFrameEditor<Exchange> {
     }
 
     private boolean canConclude() {
-        return current.isUser1Accepted() && current.isUser2Accepted();
+        return !current.isCanceled() && current.isUser1Accepted() && current.isUser2Accepted();
+    }
+
+    private boolean canCancel() {
+        return !current.isUser1Concluded() && !current.isUser2Concluded() && !current.isCanceled();
     }
 
     private String getuserLabel(User user, boolean accepted, boolean concluded) {
@@ -240,6 +259,17 @@ public class ExchangeView extends MyFrameEditor<Exchange> {
         fillForm();
     }
 
+    private void conclude(int index) {
+        if (index == 1) {
+            current.setUser1Concluded(true);
+        } else {
+            current.setUser2Concluded(true);
+        }
+
+        save();
+        fillForm();
+    }
+
     private void modify() {
         boolean confirm = showConfirm("Isso irá resetar os aceites, prosseguir?");
         if (!confirm) return;
@@ -247,8 +277,19 @@ public class ExchangeView extends MyFrameEditor<Exchange> {
         current.setUser1Accepted(false);
         current.setUser2Accepted(false);
 
-        fillForm();
         save();
+        fillForm();
+    }
+
+    private void cancel() {
+        boolean confirm = showConfirm("Isso irá cancelar permanentemente a troca, prosseguir?");
+        if (!confirm) return;
+
+        readForm();
+        current.setCanceled(true);
+
+        save();
+        fillForm();
     }
 
     private static boolean showConfirm(String message) {

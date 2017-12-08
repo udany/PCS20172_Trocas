@@ -13,8 +13,10 @@ import util.StringCellRenderer;
 import util.MyFrame;
 
 import javax.swing.*;
+import javax.swing.text.DateFormatter;
 import java.awt.*;
 import java.awt.event.ActionEvent;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -51,12 +53,16 @@ public class Home extends MyFrame {
     private JComboBox<ProductCategory> categorySelect;
     private JTextField productField;
     private JButton clearSearchButton;
+    private JPanel myExchangesPanel;
+    private JButton openExchangeButton;
+    private JList<Exchange> exchangeList;
 
 
     private SyncedListModel<Counter> countersModel = new SyncedListModel<>(null, null);
     private SyncedListModel<Product> productsModel = new SyncedListModel<>(null, null);
     private SyncedListModel<ProductCategory> categoriesModel = new SyncedListModel<>(null, null);
     private SyncedListModel<User> usersModel = new SyncedListModel<>(null, null);
+    private SyncedListModel<Exchange> exchangeModel = new SyncedListModel<>(null, null);
 
     public Home() {
         super();
@@ -66,6 +72,9 @@ public class Home extends MyFrame {
 
         setContentPane(mainPanel);
         createMenu();
+
+        ////// Exchanges
+        exchangeSetup();
 
         ////// Counters
         countersSetup();
@@ -93,6 +102,10 @@ public class Home extends MyFrame {
         ////// Title Logic
         User current = AuthController.getCurrentUser();
         setTitle("Escamb-o-mator 7000 - Logado como: " + current.getName());
+
+        ////// Exchange
+        /// List
+        exchangeModel.setQuery(x -> x.getUser1Id() == current.getId() || x.getUser2Id() == current.getId());
 
         ////// Counters
         /// List
@@ -223,6 +236,40 @@ public class Home extends MyFrame {
         editButton.addActionListener(e -> {
             ViewBus.get().open(editorView, list.getSelectedValue());
         });
+    }
+
+    private void exchangeSetup() {
+        SimpleDateFormat format = new SimpleDateFormat("dd/MM/yyyy");
+
+        setupCrud(
+                exchangeModel,
+                Exchange.store,
+                new StringCellRenderer<Exchange>(x -> {
+                    User current = AuthController.getCurrentUser();
+                    String r = x.getId() + " - " + format.format(x.getDateStarted()) + " - ";
+                    if (current == x.getUser1()) {
+                        r += x.getUser2().getName();
+                    } else {
+                        r += x.getUser1().getName();
+                    }
+
+                    if (x.isUser1Concluded() && x.isUser2Concluded()) {
+                        r += " - Concluída";
+                    } else if (x.isUser1Accepted() && x.isUser2Accepted()) {
+                        r += " - Aceita";
+                    } else if (x.isCanceled()) {
+                        r += " - Cancelada";
+                    } else {
+                        r += " - Em Progresso...";
+                    }
+
+                    return r;
+                }),
+
+                exchangeList,
+                null,
+                openExchangeButton,
+                ExchangeView.class);
     }
 
     private void countersSetup() {
@@ -488,9 +535,9 @@ public class Home extends MyFrame {
         gbc.gridy = 0;
         gbc.fill = GridBagConstraints.HORIZONTAL;
         panel2.add(clearSearchButton, gbc);
-        myCountersPanel = new JPanel();
-        myCountersPanel.setLayout(new GridBagLayout());
-        tabbedPane.addTab("Meus Balcões", myCountersPanel);
+        myExchangesPanel = new JPanel();
+        myExchangesPanel.setLayout(new GridBagLayout());
+        tabbedPane.addTab("Trocas", myExchangesPanel);
         final JScrollPane scrollPane1 = new JScrollPane();
         gbc = new GridBagConstraints();
         gbc.gridx = 0;
@@ -498,16 +545,50 @@ public class Home extends MyFrame {
         gbc.weightx = 1.0;
         gbc.weighty = 1.0;
         gbc.fill = GridBagConstraints.BOTH;
-        myCountersPanel.add(scrollPane1, gbc);
-        counterList = new JList();
-        scrollPane1.setViewportView(counterList);
+        myExchangesPanel.add(scrollPane1, gbc);
+        exchangeList = new JList();
+        scrollPane1.setViewportView(exchangeList);
         final JPanel panel3 = new JPanel();
         panel3.setLayout(new GridBagLayout());
         gbc = new GridBagConstraints();
         gbc.gridx = 0;
         gbc.gridy = 1;
         gbc.fill = GridBagConstraints.BOTH;
-        myCountersPanel.add(panel3, gbc);
+        myExchangesPanel.add(panel3, gbc);
+        openExchangeButton = new JButton();
+        openExchangeButton.setText("Abrir");
+        gbc = new GridBagConstraints();
+        gbc.gridx = 1;
+        gbc.gridy = 0;
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+        panel3.add(openExchangeButton, gbc);
+        final JPanel spacer9 = new JPanel();
+        gbc = new GridBagConstraints();
+        gbc.gridx = 0;
+        gbc.gridy = 0;
+        gbc.weightx = 1.0;
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+        panel3.add(spacer9, gbc);
+        myCountersPanel = new JPanel();
+        myCountersPanel.setLayout(new GridBagLayout());
+        tabbedPane.addTab("Meus Balcões", myCountersPanel);
+        final JScrollPane scrollPane2 = new JScrollPane();
+        gbc = new GridBagConstraints();
+        gbc.gridx = 0;
+        gbc.gridy = 0;
+        gbc.weightx = 1.0;
+        gbc.weighty = 1.0;
+        gbc.fill = GridBagConstraints.BOTH;
+        myCountersPanel.add(scrollPane2, gbc);
+        counterList = new JList();
+        scrollPane2.setViewportView(counterList);
+        final JPanel panel4 = new JPanel();
+        panel4.setLayout(new GridBagLayout());
+        gbc = new GridBagConstraints();
+        gbc.gridx = 0;
+        gbc.gridy = 1;
+        gbc.fill = GridBagConstraints.BOTH;
+        myCountersPanel.add(panel4, gbc);
         editCounterButton = new JButton();
         editCounterButton.setEnabled(false);
         editCounterButton.setText("Editar");
@@ -516,47 +597,20 @@ public class Home extends MyFrame {
         gbc.gridx = 1;
         gbc.gridy = 0;
         gbc.fill = GridBagConstraints.HORIZONTAL;
-        panel3.add(editCounterButton, gbc);
-        final JPanel spacer9 = new JPanel();
+        panel4.add(editCounterButton, gbc);
+        final JPanel spacer10 = new JPanel();
         gbc = new GridBagConstraints();
         gbc.gridx = 2;
         gbc.gridy = 0;
         gbc.fill = GridBagConstraints.HORIZONTAL;
-        panel3.add(spacer9, gbc);
+        panel4.add(spacer10, gbc);
         newCounterButton = new JButton();
         newCounterButton.setText("Novo");
         gbc = new GridBagConstraints();
         gbc.gridx = 3;
         gbc.gridy = 0;
         gbc.fill = GridBagConstraints.HORIZONTAL;
-        panel3.add(newCounterButton, gbc);
-        final JPanel spacer10 = new JPanel();
-        gbc = new GridBagConstraints();
-        gbc.gridx = 0;
-        gbc.gridy = 0;
-        gbc.weightx = 1.0;
-        gbc.fill = GridBagConstraints.HORIZONTAL;
-        panel3.add(spacer10, gbc);
-        myProductsPanel = new JPanel();
-        myProductsPanel.setLayout(new GridBagLayout());
-        tabbedPane.addTab("Meus Produtos", myProductsPanel);
-        final JScrollPane scrollPane2 = new JScrollPane();
-        gbc = new GridBagConstraints();
-        gbc.gridx = 0;
-        gbc.gridy = 0;
-        gbc.weightx = 1.0;
-        gbc.weighty = 1.0;
-        gbc.fill = GridBagConstraints.BOTH;
-        myProductsPanel.add(scrollPane2, gbc);
-        productList = new JList();
-        scrollPane2.setViewportView(productList);
-        final JPanel panel4 = new JPanel();
-        panel4.setLayout(new GridBagLayout());
-        gbc = new GridBagConstraints();
-        gbc.gridx = 0;
-        gbc.gridy = 1;
-        gbc.fill = GridBagConstraints.BOTH;
-        myProductsPanel.add(panel4, gbc);
+        panel4.add(newCounterButton, gbc);
         final JPanel spacer11 = new JPanel();
         gbc = new GridBagConstraints();
         gbc.gridx = 0;
@@ -564,30 +618,9 @@ public class Home extends MyFrame {
         gbc.weightx = 1.0;
         gbc.fill = GridBagConstraints.HORIZONTAL;
         panel4.add(spacer11, gbc);
-        final JPanel spacer12 = new JPanel();
-        gbc = new GridBagConstraints();
-        gbc.gridx = 2;
-        gbc.gridy = 0;
-        gbc.fill = GridBagConstraints.HORIZONTAL;
-        panel4.add(spacer12, gbc);
-        editProductButton = new JButton();
-        editProductButton.setEnabled(false);
-        editProductButton.setText("Editar");
-        gbc = new GridBagConstraints();
-        gbc.gridx = 1;
-        gbc.gridy = 0;
-        gbc.fill = GridBagConstraints.HORIZONTAL;
-        panel4.add(editProductButton, gbc);
-        newProductButton = new JButton();
-        newProductButton.setText("Novo");
-        gbc = new GridBagConstraints();
-        gbc.gridx = 3;
-        gbc.gridy = 0;
-        gbc.fill = GridBagConstraints.HORIZONTAL;
-        panel4.add(newProductButton, gbc);
-        categoryPanel = new JPanel();
-        categoryPanel.setLayout(new GridBagLayout());
-        tabbedPane.addTab("Categorias", categoryPanel);
+        myProductsPanel = new JPanel();
+        myProductsPanel.setLayout(new GridBagLayout());
+        tabbedPane.addTab("Meus Produtos", myProductsPanel);
         final JScrollPane scrollPane3 = new JScrollPane();
         gbc = new GridBagConstraints();
         gbc.gridx = 0;
@@ -595,48 +628,47 @@ public class Home extends MyFrame {
         gbc.weightx = 1.0;
         gbc.weighty = 1.0;
         gbc.fill = GridBagConstraints.BOTH;
-        categoryPanel.add(scrollPane3, gbc);
-        categoryList = new JList();
-        scrollPane3.setViewportView(categoryList);
+        myProductsPanel.add(scrollPane3, gbc);
+        productList = new JList();
+        scrollPane3.setViewportView(productList);
         final JPanel panel5 = new JPanel();
         panel5.setLayout(new GridBagLayout());
         gbc = new GridBagConstraints();
         gbc.gridx = 0;
         gbc.gridy = 1;
         gbc.fill = GridBagConstraints.BOTH;
-        categoryPanel.add(panel5, gbc);
-        final JPanel spacer13 = new JPanel();
+        myProductsPanel.add(panel5, gbc);
+        final JPanel spacer12 = new JPanel();
         gbc = new GridBagConstraints();
         gbc.gridx = 0;
         gbc.gridy = 0;
         gbc.weightx = 1.0;
         gbc.fill = GridBagConstraints.HORIZONTAL;
-        panel5.add(spacer13, gbc);
-        final JPanel spacer14 = new JPanel();
+        panel5.add(spacer12, gbc);
+        final JPanel spacer13 = new JPanel();
         gbc = new GridBagConstraints();
         gbc.gridx = 2;
         gbc.gridy = 0;
         gbc.fill = GridBagConstraints.HORIZONTAL;
-        panel5.add(spacer14, gbc);
-        editCategoryButton = new JButton();
-        editCategoryButton.setEnabled(false);
-        editCategoryButton.setText("Editar");
+        panel5.add(spacer13, gbc);
+        editProductButton = new JButton();
+        editProductButton.setEnabled(false);
+        editProductButton.setText("Editar");
         gbc = new GridBagConstraints();
         gbc.gridx = 1;
         gbc.gridy = 0;
         gbc.fill = GridBagConstraints.HORIZONTAL;
-        panel5.add(editCategoryButton, gbc);
-        newCategoryButton = new JButton();
-        newCategoryButton.setEnabled(true);
-        newCategoryButton.setText("Nova");
+        panel5.add(editProductButton, gbc);
+        newProductButton = new JButton();
+        newProductButton.setText("Novo");
         gbc = new GridBagConstraints();
         gbc.gridx = 3;
         gbc.gridy = 0;
         gbc.fill = GridBagConstraints.HORIZONTAL;
-        panel5.add(newCategoryButton, gbc);
-        usersPanel = new JPanel();
-        usersPanel.setLayout(new GridBagLayout());
-        tabbedPane.addTab("Usuários", usersPanel);
+        panel5.add(newProductButton, gbc);
+        categoryPanel = new JPanel();
+        categoryPanel.setLayout(new GridBagLayout());
+        tabbedPane.addTab("Categorias", categoryPanel);
         final JScrollPane scrollPane4 = new JScrollPane();
         gbc = new GridBagConstraints();
         gbc.gridx = 0;
@@ -644,16 +676,65 @@ public class Home extends MyFrame {
         gbc.weightx = 1.0;
         gbc.weighty = 1.0;
         gbc.fill = GridBagConstraints.BOTH;
-        usersPanel.add(scrollPane4, gbc);
-        userList = new JList();
-        scrollPane4.setViewportView(userList);
+        categoryPanel.add(scrollPane4, gbc);
+        categoryList = new JList();
+        scrollPane4.setViewportView(categoryList);
         final JPanel panel6 = new JPanel();
         panel6.setLayout(new GridBagLayout());
         gbc = new GridBagConstraints();
         gbc.gridx = 0;
         gbc.gridy = 1;
         gbc.fill = GridBagConstraints.BOTH;
-        usersPanel.add(panel6, gbc);
+        categoryPanel.add(panel6, gbc);
+        final JPanel spacer14 = new JPanel();
+        gbc = new GridBagConstraints();
+        gbc.gridx = 0;
+        gbc.gridy = 0;
+        gbc.weightx = 1.0;
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+        panel6.add(spacer14, gbc);
+        final JPanel spacer15 = new JPanel();
+        gbc = new GridBagConstraints();
+        gbc.gridx = 2;
+        gbc.gridy = 0;
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+        panel6.add(spacer15, gbc);
+        editCategoryButton = new JButton();
+        editCategoryButton.setEnabled(false);
+        editCategoryButton.setText("Editar");
+        gbc = new GridBagConstraints();
+        gbc.gridx = 1;
+        gbc.gridy = 0;
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+        panel6.add(editCategoryButton, gbc);
+        newCategoryButton = new JButton();
+        newCategoryButton.setEnabled(true);
+        newCategoryButton.setText("Nova");
+        gbc = new GridBagConstraints();
+        gbc.gridx = 3;
+        gbc.gridy = 0;
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+        panel6.add(newCategoryButton, gbc);
+        usersPanel = new JPanel();
+        usersPanel.setLayout(new GridBagLayout());
+        tabbedPane.addTab("Usuários", usersPanel);
+        final JScrollPane scrollPane5 = new JScrollPane();
+        gbc = new GridBagConstraints();
+        gbc.gridx = 0;
+        gbc.gridy = 0;
+        gbc.weightx = 1.0;
+        gbc.weighty = 1.0;
+        gbc.fill = GridBagConstraints.BOTH;
+        usersPanel.add(scrollPane5, gbc);
+        userList = new JList();
+        scrollPane5.setViewportView(userList);
+        final JPanel panel7 = new JPanel();
+        panel7.setLayout(new GridBagLayout());
+        gbc = new GridBagConstraints();
+        gbc.gridx = 0;
+        gbc.gridy = 1;
+        gbc.fill = GridBagConstraints.BOTH;
+        usersPanel.add(panel7, gbc);
         editUserButton = new JButton();
         editUserButton.setEnabled(false);
         editUserButton.setText("Editar");
@@ -661,14 +742,14 @@ public class Home extends MyFrame {
         gbc.gridx = 1;
         gbc.gridy = 0;
         gbc.fill = GridBagConstraints.HORIZONTAL;
-        panel6.add(editUserButton, gbc);
-        final JPanel spacer15 = new JPanel();
+        panel7.add(editUserButton, gbc);
+        final JPanel spacer16 = new JPanel();
         gbc = new GridBagConstraints();
         gbc.gridx = 0;
         gbc.gridy = 0;
         gbc.weightx = 1.0;
         gbc.fill = GridBagConstraints.HORIZONTAL;
-        panel6.add(spacer15, gbc);
+        panel7.add(spacer16, gbc);
     }
 
     /**
