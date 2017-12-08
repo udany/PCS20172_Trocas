@@ -1,10 +1,7 @@
 package view;
 
 import controller.AuthController;
-import model.CounterItem;
-import model.Exchange;
-import model.Product;
-import model.User;
+import model.*;
 import util.ArrayListModel;
 import util.MyFrame;
 import util.MyFrameEditor;
@@ -58,6 +55,8 @@ public class ExchangeView extends MyFrameEditor<Exchange> {
 
         modifyButton.addActionListener(e -> modify());
         cancelButton.addActionListener(e -> cancel());
+
+        saveButton.addActionListener(e -> save());
     }
 
     private void setupSide(
@@ -119,6 +118,11 @@ public class ExchangeView extends MyFrameEditor<Exchange> {
         }
     }
 
+    private void notifyOtherUser(String text){
+        User other = isUser(1) ? current.getUser2() : current.getUser1();
+        Notification.create(other, text);
+    }
+
     @Override
     protected Exchange create() {
         return new Exchange();
@@ -126,6 +130,11 @@ public class ExchangeView extends MyFrameEditor<Exchange> {
 
     @Override
     protected void save() {
+        if (current.getId() == 0) {
+            User currentUser = AuthController.getCurrentUser();
+            notifyOtherUser("Nova troca proposta por " + currentUser.getName() + ".");
+        }
+
         Exchange.store.Save(current);
     }
 
@@ -255,6 +264,9 @@ public class ExchangeView extends MyFrameEditor<Exchange> {
             current.setUser2Accepted(true);
         }
 
+        User currentUser = AuthController.getCurrentUser();
+        notifyOtherUser("Troca " + current.getId() + " aceita por " + currentUser.getName() + ".");
+
         save();
         fillForm();
     }
@@ -266,6 +278,9 @@ public class ExchangeView extends MyFrameEditor<Exchange> {
             current.setUser2Concluded(true);
         }
 
+        User currentUser = AuthController.getCurrentUser();
+        notifyOtherUser("Troca " + current.getId() + " concluída por " + currentUser.getName() + ".");
+
         save();
         fillForm();
     }
@@ -276,6 +291,9 @@ public class ExchangeView extends MyFrameEditor<Exchange> {
 
         current.setUser1Accepted(false);
         current.setUser2Accepted(false);
+
+        User currentUser = AuthController.getCurrentUser();
+        notifyOtherUser("Troca " + current.getId() + " com " + currentUser.getName() + " modificada.");
 
         save();
         fillForm();
@@ -290,6 +308,9 @@ public class ExchangeView extends MyFrameEditor<Exchange> {
 
         save();
         fillForm();
+
+        User currentUser = AuthController.getCurrentUser();
+        notifyOtherUser("Troca "+current.getId()+" cancelada por " + currentUser.getName() + ".");
     }
 
     private static boolean showConfirm(String message) {

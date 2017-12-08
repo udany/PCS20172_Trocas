@@ -6,6 +6,7 @@
 package main;
 
 import controller.AuthController;
+import model.Notification;
 import model.Product;
 import model.User;
 import view.Home;
@@ -23,6 +24,7 @@ public class Test {
 
         AuthController.auth(User.builder().email("admin").password("admin").build());
         ViewBus.get().open(Home.class);
+
         //ViewBus.get().open(SearchResults.class, Product.store.List());
     }
 }
