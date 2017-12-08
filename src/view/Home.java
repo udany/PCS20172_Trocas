@@ -171,6 +171,7 @@ public class Home extends MyFrame {
             result &= stateSelect.getSelectedItem() == null || stateSelect.getSelectedItem() == x.getAddress().getState();
             result &= x.getAddress().getCity().contains(cityField.getText());
             result &= x.getAddress().getNeighborhood().contains(neighborhoodField.getText());
+            result &= x.getUser() != AuthController.getCurrentUser();
 
             return result;
         });
