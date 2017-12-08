@@ -118,7 +118,7 @@ public class ExchangeView extends MyFrameEditor<Exchange> {
         }
     }
 
-    private void notifyOtherUser(String text){
+    private void notifyOtherUser(String text) {
         User other = isUser(1) ? current.getUser2() : current.getUser1();
         Notification.create(other, text);
     }
@@ -310,7 +310,7 @@ public class ExchangeView extends MyFrameEditor<Exchange> {
         fillForm();
 
         User currentUser = AuthController.getCurrentUser();
-        notifyOtherUser("Troca "+current.getId()+" cancelada por " + currentUser.getName() + ".");
+        notifyOtherUser("Troca " + current.getId() + " cancelada por " + currentUser.getName() + ".");
     }
 
     private static boolean showConfirm(String message) {

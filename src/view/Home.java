@@ -389,6 +389,21 @@ public class Home extends MyFrame {
                 });
                 notificationMenu.add(menuItem);
             }
+
+            notificationMenu.add(new JSeparator());
+
+            JMenuItem menuItem = new JMenuItem(new AbstractAction("Marcar como lidas...") {
+                public void actionPerformed(ActionEvent ae) {
+                    ArrayList<Notification> currentNotifications = new ArrayList<>();
+                    currentNotifications.addAll(notifications);
+
+                    for (Notification n : currentNotifications) {
+                        n.setRead(true);
+                        Notification.store.Save(n);
+                    }
+                }
+            });
+            notificationMenu.add(menuItem);
         } else {
             notificationMenu.setText("Notificações");
 
