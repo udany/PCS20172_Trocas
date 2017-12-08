@@ -16,6 +16,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static javax.swing.JOptionPane.YES_NO_OPTION;
+import static javax.swing.JOptionPane.showConfirmDialog;
+import static javax.swing.JOptionPane.showMessageDialog;
+
 public class ExchangeView extends MyFrameEditor<Exchange> {
 
     private JPanel mainPanel;
@@ -47,19 +51,14 @@ public class ExchangeView extends MyFrameEditor<Exchange> {
         setSize(600, 450);
         setContentPane(mainPanel);
 
-        saveButton.addActionListener(e -> {
-            save();
-            close();
-        });
-
         cancelButton.addActionListener(e -> {
             close();
         });
 
         productSelector = (ProductSelector) ViewBus.get().get(ProductSelector.class);
 
-        setupSide(productModel1, productList1, addProductButton1, removeProductButton1, 1);
-        setupSide(productModel2, productList2, addProductButton2, removeProductButton2, 2);
+        setupSide(productModel1, productList1, addProductButton1, removeProductButton1, acceptButton1, 1);
+        setupSide(productModel2, productList2, addProductButton2, removeProductButton2, acceptButton2, 2);
     }
 
     private void setupSide(
@@ -67,6 +66,7 @@ public class ExchangeView extends MyFrameEditor<Exchange> {
             JList<Product> productList,
             JButton addProductButton,
             JButton removeProductButton,
+            JButton acceptButton,
             int index) {
 
         productList.setModel(productModel);
@@ -74,7 +74,12 @@ public class ExchangeView extends MyFrameEditor<Exchange> {
         productList.setCellRenderer(new StringCellRenderer<Product>(x -> x.getName()));
 
         productList.addListSelectionListener(e -> {
-            removeProductButton.setEnabled(true);
+            Product p = productList.getSelectedValue();
+            if (p != null) {
+                removeProductButton.setEnabled(true);
+            } else {
+                removeProductButton.setEnabled(false);
+            }
         });
 
 
@@ -91,6 +96,12 @@ public class ExchangeView extends MyFrameEditor<Exchange> {
             List<Product> list = productList.getSelectedValuesList();
 
             productModel.remove(list);
+        });
+
+
+        //// Accept
+        acceptButton.addActionListener(e -> {
+            accept(index);
         });
     }
 
@@ -114,17 +125,134 @@ public class ExchangeView extends MyFrameEditor<Exchange> {
 
     @Override
     protected void readForm() {
-
+        current.getUser1Products().setList(productModel1.getList().stream().map(x -> x.getId()).collect(Collectors.toList()));
+        current.getUser2Products().setList(productModel2.getList().stream().map(x -> x.getId()).collect(Collectors.toList()));
     }
 
     @Override
     protected void fillForm() {
-        user1Label.setText(current.getUser1().getName());
-        user2Label.setText(current.getUser2().getName());
+        user1Label.setText(getuserLabel(current.getUser1(), current.isUser1Accepted(), current.isUser1Concluded()));
+        user2Label.setText(getuserLabel(current.getUser2(), current.isUser2Accepted(), current.isUser2Concluded()));
 
         productModel1.setList(current.getUser1Products().getModels());
         productModel2.setList(current.getUser2Products().getModels());
 
+        removeProductButton1.setEnabled(false);
+        removeProductButton2.setEnabled(false);
+
+        // Edit
+        if (!canEdit()) {
+            productList1.setEnabled(false);
+            addProductButton1.setEnabled(false);
+
+            productList2.setEnabled(false);
+            addProductButton2.setEnabled(false);
+
+            saveButton.setEnabled(false);
+            modifyButton.setEnabled(!canConclude());
+        } else {
+            productList1.setEnabled(true);
+            addProductButton1.setEnabled(true);
+
+            productList2.setEnabled(true);
+            addProductButton2.setEnabled(true);
+
+            saveButton.setEnabled(true);
+            modifyButton.setEnabled(false);
+        }
+
+
+        /// Accept
+        if (isUser(1) && !current.isUser1Accepted()) {
+            acceptButton1.setEnabled(true);
+        } else {
+            acceptButton1.setEnabled(false);
+        }
+
+        if (isUser(2) && !current.isUser2Accepted()) {
+            acceptButton2.setEnabled(true);
+        } else {
+            acceptButton2.setEnabled(false);
+        }
+
+
+        /// Conclude
+        if (canConclude() && isUser(1) && !current.isUser1Concluded()) {
+            concludeButton1.setEnabled(true);
+        } else {
+            concludeButton1.setEnabled(false);
+        }
+
+        if (canConclude() && isUser(2) && !current.isUser2Concluded()) {
+            concludeButton2.setEnabled(true);
+        } else {
+            concludeButton2.setEnabled(false);
+        }
+    }
+
+    private boolean isUser(int index) {
+        if (index == 1) {
+            return current.getUser1() == AuthController.getCurrentUser();
+        } else {
+            return current.getUser2() == AuthController.getCurrentUser();
+        }
+    }
+
+    private boolean canEdit() {
+        return !current.isUser1Accepted() && !current.isUser2Accepted() &&
+                !current.isUser1Concluded() && !current.isUser2Concluded() &&
+                !current.isCanceled();
+    }
+
+    private boolean canConclude() {
+        return current.isUser1Accepted() && current.isUser2Accepted();
+    }
+
+    private String getuserLabel(User user, boolean accepted, boolean concluded) {
+        String r = user.getName();
+
+        if (!accepted) {
+            r += " - Pendente";
+        } else {
+            if (!concluded) {
+                r += " - Aceito";
+            } else {
+                r += " - Concluído";
+            }
+        }
+
+        return r;
+    }
+
+    private void accept(int index) {
+        boolean confirm = showConfirm("Isso irá salvar quaisquer alterações, prosseguir?");
+        if (!confirm) return;
+
+        readForm();
+
+        if (index == 1) {
+            current.setUser1Accepted(true);
+        } else {
+            current.setUser2Accepted(true);
+        }
+
+        save();
+        fillForm();
+    }
+
+    private void modify() {
+        boolean confirm = showConfirm("Isso irá resetar os aceites, prosseguir?");
+        if (!confirm) return;
+
+        current.setUser1Accepted(false);
+        current.setUser2Accepted(false);
+
+        fillForm();
+        save();
+    }
+
+    private static boolean showConfirm(String message) {
+        return showConfirmDialog(null, message, "Aviso", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE) == 0;
     }
 
     protected String getModelName() {
@@ -154,7 +282,7 @@ public class ExchangeView extends MyFrameEditor<Exchange> {
         gbc = new GridBagConstraints();
         gbc.gridx = 1;
         gbc.gridy = 1;
-        gbc.weightx = 1.0;
+        gbc.weightx = 0.5;
         gbc.weighty = 1.0;
         gbc.fill = GridBagConstraints.BOTH;
         mainPanel.add(panel1, gbc);
@@ -272,7 +400,7 @@ public class ExchangeView extends MyFrameEditor<Exchange> {
         gbc = new GridBagConstraints();
         gbc.gridx = 3;
         gbc.gridy = 1;
-        gbc.weightx = 1.0;
+        gbc.weightx = 0.5;
         gbc.weighty = 1.0;
         gbc.fill = GridBagConstraints.BOTH;
         mainPanel.add(panel4, gbc);

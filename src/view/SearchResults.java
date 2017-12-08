@@ -12,6 +12,7 @@ import util.StringCellRenderer;
 import javax.swing.*;
 import java.awt.*;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -111,8 +112,8 @@ public class SearchResults extends MyFrame {
                 .user1Id(product.getUserId())
                 .user2Id(AuthController.getCurrentUser().getId())
                 .dateStarted(new Date())
-                .user1Products(new ModelList<>())
-                .user2Products(new ModelList<>())
+                .user1Products(new ModelList<>(Product.store, Arrays.asList(product.getId())))
+                .user2Products(new ModelList<>(Product.store))
                 .build();
 
         ViewBus.get().open(ExchangeView.class, exchange);
